@@ -129,6 +129,7 @@ return function()
         workspace.Towers.ToAST.Obby:GetChildren()[713],
         workspace.Towers.ToAST.Obby:GetChildren()[734],
         workspace.ClientParts.PushingPlatform:GetChildren()[3],
+        workspace.Towers.ToAST.Obby:GetChildren()[753],
         workspace.Towers.ToAST.Obby:GetChildren()[555],
         workspace.Towers.ToAST.Obby:GetChildren()[761],
         workspace.Towers.ToAST.Obby:GetChildren()[767],
