@@ -74,7 +74,7 @@ return function()
         workspace.ClientParts:GetChildren()[25],
         workspace.ClientParts:GetChildren()[56],
         workspace.Towers.ToAST.Obby:GetChildren()[85],
-        workspace.Towers.ToAST.Obby:GetChildren()[94],
+        workspace.Towers.ToAST.Obby:GetChildren()[94]
         
 
     }
