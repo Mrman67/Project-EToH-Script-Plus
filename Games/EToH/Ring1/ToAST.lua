@@ -29,7 +29,6 @@ return function()
         workspace.Towers.ToAST.Obby:GetChildren()[1031],
         workspace.Towers.ToAST.Obby:GetChildren()[224],
         workspace.Towers.ToAST.Obby:GetChildren()[192],
-        workspace.Towers.ToAST.Obby:GetChildren()[195],
         workspace.Towers.ToAST.Obby:GetChildren()[203],
         workspace.Towers.ToAST.Obby:GetChildren()[204],
         workspace.Towers.ToAST.Obby:GetChildren()[206],
