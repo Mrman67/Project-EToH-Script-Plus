@@ -262,7 +262,9 @@ return function()
         workspace.Towers.ToNI.Obby:GetChildren()[951],
         workspace.Towers.ToNI.Obby:GetChildren()[1068],
         workspace.Towers.ToNI.Obby:GetChildren()[952],
-        workspace.Towers.ToNI.Obby:GetChildren()[1076]
+        workspace.Towers.ToNI.Obby:GetChildren()[1076], --F10
+        workspace.Towers.ToNI.Obby:GetChildren()[938]
+        
         
         
         
