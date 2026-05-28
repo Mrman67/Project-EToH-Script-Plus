@@ -103,8 +103,21 @@ return function()
         workspace.ClientParts.DistanceAnchoringObjects:GetChildren()[19]:GetChildren()[2],
         workspace.Towers.ToM.Obby:GetChildren()[221],
         workspace.Towers.ToM.Obby:GetChildren()[341],
-        workspace.Towers.ToM.Obby:GetChildren()[225]
-        
+        workspace.Towers.ToM.Obby:GetChildren()[225], --F5
+        workspace.Towers.ToM.Obby:GetChildren()[433],
+        workspace.Towers.ToM.Obby:GetChildren()[446],
+        workspace.Towers.ToM.Obby:GetChildren()[459],
+        workspace.Towers.ToM.Obby:GetChildren()[462],
+        workspace.Towers.ToM.Obby:GetChildren()[461],
+        workspace.Towers.ToM.Obby:GetChildren()[463],
+        workspace.Towers.ToM.Obby:GetChildren()[465],
+        workspace.Towers.ToM.Obby:GetChildren()[467],
+        workspace.Towers.ToM.Obby:GetChildren()[466],
+        workspace.Towers.ToM.Obby:GetChildren()[468],
+        workspace.Towers.ToM.Obby:GetChildren()[469],
+        workspace.Towers.ToM.Obby:GetChildren()[477],
+        workspace.Towers.ToM.Obby:GetChildren()[434],
+        workspace.Towers.ToM.Obby:GetChildren()[404]
 
         
         
