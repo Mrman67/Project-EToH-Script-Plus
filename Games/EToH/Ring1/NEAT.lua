@@ -1,73 +1,24 @@
 return function()
     return {
         "jump",
-        workspace.Towers.NEAT.Obby.Part,
-        workspace.Towers.NEAT.Obby:GetChildren()[2],
-        workspace.Towers.NEAT.Obby:GetChildren()[3],
-        workspace.Towers.NEAT.Obby:GetChildren()[4],
-        workspace.Towers.NEAT.Obby:GetChildren()[5],
-        workspace.Towers.NEAT.Obby:GetChildren()[27],
-        workspace.Towers.NEAT.Obby:GetChildren()[7],
-        workspace.Towers.NEAT.Obby:GetChildren()[64],
-        workspace.Towers.NEAT.Obby:GetChildren()[8],
-        workspace.Towers.NEAT.Obby:GetChildren()[9],
-        workspace.Towers.NEAT.Obby:GetChildren()[10],
-        workspace.Towers.NEAT.Obby:GetChildren()[28],
-        workspace.Towers.NEAT.Obby:GetChildren()[11],
-        workspace.Towers.NEAT.Obby:GetChildren()[12],
-        workspace.Towers.NEAT.Obby:GetChildren()[13],
-        workspace.Towers.NEAT.Obby:GetChildren()[14],
-        workspace.Towers.NEAT.Obby:GetChildren()[15],
-        workspace.Towers.NEAT.Obby:GetChildren()[16],
-        workspace.Towers.NEAT.Obby:GetChildren()[18],
-        workspace.Towers.NEAT.Obby:GetChildren()[19],
-        workspace.Towers.NEAT.Obby:GetChildren()[21],
-        workspace.Towers.NEAT.Obby:GetChildren()[22],
-        workspace.Towers.NEAT.Obby:GetChildren()[23],
-        workspace.Towers.NEAT.Obby:GetChildren()[24],
-        workspace.Towers.NEAT.Obby:GetChildren()[25],
-        workspace.Towers.NEAT.Obby:GetChildren()[30],
-        workspace.Towers.NEAT.Obby:GetChildren()[31],
-        workspace.Towers.NEAT.Obby:GetChildren()[29],
-        workspace.Towers.NEAT.Obby:GetChildren()[26],
-        workspace.Towers.NEAT.Obby:GetChildren()[32],
-        workspace.Towers.NEAT.Obby:GetChildren()[33],
-        workspace.Towers.NEAT.Obby:GetChildren()[34],
-        workspace.Towers.NEAT.Obby:GetChildren()[35],
-        workspace.Towers.NEAT.Obby:GetChildren()[36],
-        workspace.Towers.NEAT.Obby:GetChildren()[37],
-        workspace.Towers.NEAT.Obby:GetChildren()[38],
-        workspace.Towers.NEAT.Obby:GetChildren()[39],
-        workspace.Towers.NEAT.Obby:GetChildren()[40],
-        workspace.Towers.NEAT.Obby:GetChildren()[44],
-        workspace.Towers.NEAT.Obby:GetChildren()[43],
-        workspace.Towers.NEAT.Obby:GetChildren()[42],
-        workspace.Towers.NEAT.Obby:GetChildren()[41],
-        workspace.Towers.NEAT.Obby:GetChildren()[45],
-        workspace.Towers.NEAT.Obby:GetChildren()[46],
-        workspace.Towers.NEAT.Obby:GetChildren()[47],
-        workspace.Towers.NEAT.Obby:GetChildren()[48],
-        workspace.Towers.NEAT.Obby:GetChildren()[49],
-        workspace.Towers.NEAT.Obby:GetChildren()[50],
-        workspace.Towers.NEAT.Obby:GetChildren()[51],
-        workspace.Towers.NEAT.Obby:GetChildren()[52],
-        workspace.Towers.NEAT.Obby:GetChildren()[54],
-        workspace.Towers.NEAT.Obby:GetChildren()[53],
-        workspace.Towers.NEAT.Obby:GetChildren()[55],
-        workspace.Towers.NEAT.Obby:GetChildren()[56],
-        workspace.Towers.NEAT.Obby:GetChildren()[57],
-        workspace.Towers.NEAT.Obby:GetChildren()[58],
-        workspace.Towers.NEAT.Obby:GetChildren()[59],
-        workspace.Towers.NEAT.Obby:GetChildren()[60],
-        workspace.Towers.NEAT.Obby:GetChildren()[61],
-        workspace.Towers.NEAT.Obby:GetChildren()[62],
-        workspace.Towers.NEAT.Obby:GetChildren()[63],
-        workspace.Towers.NEAT.Obby:GetChildren()[20],
-        workspace.Towers.NEAT.Obby:GetChildren()[6],
+        workspace.Towers.NEAT.Obby.Part
+        workspace.Towers.NEAT.Obby:GetChildren()[2]
+        workspace.Towers.NEAT.Obby:GetChildren()[3]
+        workspace.Towers.NEAT.Obby:GetChildren()[4]
+        workspace.Towers.NEAT.Obby:GetChildren()[5]
+        workspace.Towers.NEAT.Obby:GetChildren()[27]
+        workspace.Towers.NEAT.Obby:GetChildren()[8]
+        workspace.Towers.NEAT.Obby:GetChildren()[10]
+        workspace.Towers.NEAT.Obby:GetChildren()[28]
+        workspace.Towers.NEAT.Obby:GetChildren()[16]
+        workspace.Towers.NEAT.Obby:GetChildren()[18]
+        workspace.Towers.NEAT.Frame:GetChildren()[11]
+        workspace.Towers.NEAT.Frame:GetChildren()[27]
+        workspace.Towers.NEAT.Frame:GetChildren()[22]
+        workspace.Towers.NEAT.Obby:GetChildren()[46]
+        workspace.Towers.NEAT.Obby:GetChildren()[62]
         workspace.Towers.NEAT.WinPad
-        
-        
-        
+ 
 
     }
 end
