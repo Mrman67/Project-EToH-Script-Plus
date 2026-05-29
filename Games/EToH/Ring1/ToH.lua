@@ -155,7 +155,39 @@ return function()
         workspace.Towers.ToH.Obby:GetChildren()[723],
         workspace.Towers.ToH.Obby:GetChildren()[345],
         workspace.Towers.ToH.Obby:GetChildren()[390],
-        workspace.Towers.ToH.Obby:GetChildren()[222]
+        workspace.Towers.ToH.Obby:GetChildren()[222],
+        workspace.Towers.ToH.Obby:GetChildren()[704],
+        workspace.Towers.ToH.Obby:GetChildren()[317],
+        workspace.Towers.ToH.Obby:GetChildren()[392],
+        workspace.Towers.ToH.Obby:GetChildren()[382],
+        workspace.Towers.ToH.Obby:GetChildren()[634],
+        workspace.Towers.ToH.Obby:GetChildren()[623], 
+        workspace.Towers.ToH.Obby:GetChildren()[363], --F10
+        workspace.Towers.ToH.Obby:GetChildren()[344],
+        workspace.Towers.ToH.Obby:GetChildren()[407],
+        workspace.Towers.ToH.Obby:GetChildren()[626],
+        workspace.Towers.ToH.Obby:GetChildren()[614],
+        workspace.Towers.ToH.Obby:GetChildren()[627],
+        workspace.Towers.ToH.Obby:GetChildren()[420],
+        workspace.Towers.ToH.Obby:GetChildren()[352],
+        workspace.Towers.ToH.Obby:GetChildren()[376],
+        workspace.ClientParts:GetChildren()[67].Platform,
+        workspace.ClientParts:GetChildren()[45].Platform,
+        workspace.Towers.ToH.Obby:GetChildren()[291],
+        workspace.Towers.ToH.Obby:GetChildren()[689],
+        workspace.Towers.ToH.Obby:GetChildren()[615],
+        workspace.Towers.ToH.Obby:GetChildren()[705],
+        workspace.Towers.ToH.Obby:GetChildren()[711],
+        workspace.Towers.ToH.Obby:GetChildren()[709],
+        workspace.Towers.ToH.Obby:GetChildren()[629],
+        workspace.Towers.ToH.Obby:GetChildren()[371],
+        workspace.Towers.ToH.Frame["ToH Clouds"]:GetChildren()[4],
+        workspace.Towers.ToH.Frame["ToH Clouds"].Cloud1,
+        workspace.Towers.ToH.Frame["ToH Clouds"]:GetChildren()[2],
+        workspace.Towers.ToH.Frame["ToH Clouds"]:GetChildren()[3],
+        workspace.Towers.ToH.WinPad
+        
+        
         
         
         
