@@ -67,25 +67,25 @@ return function()
         workspace.ClientParts:GetChildren()[52].Teleporter,
         workspace.ClientParts:GetChildren()[52].Destination,
         workspace.Towers.ToK.Frame:GetChildren()[60], --F3
-        workspace.Towers.ToK.Obby:GetChildren()[183]
-        workspace.Towers.ToK.Obby:GetChildren()[184]
-        workspace.Towers.ToK.Obby:GetChildren()[185]
-        workspace.Towers.ToK.Obby:GetChildren()[187]
-        workspace.Towers.ToK.Obby:GetChildren()[508].LineSegment
-        workspace.Towers.ToK.Obby:GetChildren()[189]
-        workspace.Towers.ToK.Obby:GetChildren()[509]:GetChildren()[20]
-        workspace.ClientParts:GetChildren()[36].Button
-        workspace.Towers.ToK.Obby:GetChildren()[190]
-        workspace.Towers.ToK.Obby:GetChildren()[194]
-        workspace.ClientParts.PushboxButton:GetChildren()[2]
-        workspace.ClientParts.PushboxButton.Part
-        workspace.ClientParts.ButtonPlatforms:GetChildren()[29]
-        workspace.ClientParts.ButtonPlatforms:GetChildren()[30]
-        workspace.ClientParts.ButtonPlatforms:GetChildren()[31]
-        workspace.ClientParts.Key.KeyHitbox
-        workspace.ClientParts.KeyDoor.KeyHitbox
-        workspace.ClientParts.ButtonPlatforms:GetChildren()[32]
-        workspace.ClientParts.ButtonPlatforms:GetChildren()[34]
+        workspace.Towers.ToK.Obby:GetChildren()[183],
+        workspace.Towers.ToK.Obby:GetChildren()[184],
+        workspace.Towers.ToK.Obby:GetChildren()[185],
+        workspace.Towers.ToK.Obby:GetChildren()[187],
+        workspace.Towers.ToK.Obby:GetChildren()[508].LineSegment,
+        workspace.Towers.ToK.Obby:GetChildren()[189],
+        workspace.Towers.ToK.Obby:GetChildren()[509]:GetChildren()[20],
+        workspace.ClientParts:GetChildren()[36].Button,
+        workspace.Towers.ToK.Obby:GetChildren()[190],
+        workspace.Towers.ToK.Obby:GetChildren()[194],
+        workspace.ClientParts.PushboxButton:GetChildren()[2],
+        workspace.ClientParts.PushboxButton.Part,
+        workspace.ClientParts.ButtonPlatforms:GetChildren()[29],
+        workspace.ClientParts.ButtonPlatforms:GetChildren()[30],
+        workspace.ClientParts.ButtonPlatforms:GetChildren()[31],
+        workspace.ClientParts.Key.KeyHitbox,
+        workspace.ClientParts.KeyDoor.KeyHitbox,
+        workspace.ClientParts.ButtonPlatforms:GetChildren()[32],
+        workspace.ClientParts.ButtonPlatforms:GetChildren()[34],
         workspace.ClientParts.F4Keys:GetChildren()[2].KeyHitbox,--F4
         workspace.ClientParts.F4Keys:GetChildren()[4].KeyHitbox,
         workspace.ClientParts.F4Keys.F4Key.KeyHitbox,
