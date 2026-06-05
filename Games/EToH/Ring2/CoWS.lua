@@ -742,7 +742,6 @@ return function()
         workspace.ClientParts:GetChildren()[91]:GetChildren()[1],
         workspace.ClientParts:GetChildren()[91]:GetChildren()[2],
         workspace.ClientParts:GetChildren()[51]:GetChildren()[1],
-        workspace.ClientParts:GetChildren()[51]:GetChildren()[5],
         workspace.ClientParts.KillBricks:GetChildren()[99],
         workspace.ClientParts.KillBricks:GetChildren()[101],
         workspace.ClientParts.KillBricks:GetChildren()[200],
@@ -2546,3 +2545,10 @@ return function()
         workspace.Towers.CoWS.WinPad
     }
 end
+
+--[[
+
+workspace.ClientParts:GetChildren()[51]:GetChildren()[1],
+workspace.ClientParts:GetChildren()[51]:GetChildren()[5],
+
+--]]
