@@ -587,7 +587,7 @@ return function()
         workspace.Towers.ToD.Obby:GetChildren()[107],
         workspace.ClientParts:GetChildren()[50]:GetChildren()[3],
         workspace.ClientParts:GetChildren()[50]:GetChildren()[2],
-        workspace.Towers.ToD.Obby.FakeWinpad
+        workspace.Towers.ToD.Obby.FakeWinpad,
         workspace.Towers.ToD.WinPad
     }
 end
