@@ -47,6 +47,7 @@ return {
         { name = "ToWH",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToLD",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToD",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
+        { name = "CoHaD",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
         
     },
     TowerRush = {
