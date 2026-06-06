@@ -1581,7 +1581,6 @@ return function()
         workspace.Towers.CoHaD.Obby:GetChildren()[1542],
         workspace.Towers.CoHaD.Obby:GetChildren()[1543],
         workspace.Towers.CoHaD.Obby:GetChildren()[1548],
-        workspace.Towers.CoHaD.Obby:GetChildren()[1515],
         workspace.Towers.CoHaD.Obby:GetChildren()[1552],
         workspace.Towers.CoHaD.Obby:GetChildren()[1516],
         workspace.Towers.CoHaD.Obby:GetChildren()[5850],
