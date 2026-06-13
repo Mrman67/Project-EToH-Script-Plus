@@ -3,6 +3,7 @@ local Categories = {
     Ring2 = 9070979698,
     Ring3 = 9070980083,
     Ring4 = 9070980555,
+    Ring5 = 9070980846,
 }
 
 return {
@@ -64,6 +65,7 @@ return {
         { name = "ToCN",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToVS",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToI",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
+        { name = "CoCR",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
     },
     TowerRush = {
         {
