@@ -1,5 +1,11 @@
 return function()
     return {
+        workspace.Towers.CoSR:GetChildren()[2]:GetChildren()[54],
+        workspace.ClientParts.KillBricks:GetChildren()[93]
+    }
+end
+return function()
+    return {
         workspace.Towers.CoSR.Obby:GetChildren()[1087],
         workspace.Towers.CoSR.Obby:GetChildren()[1198],
         workspace.Towers.CoSR.Obby:GetChildren()[1403],
@@ -220,7 +226,6 @@ return function()
         workspace.ClientParts.KillBricks:GetChildren()[42],
         workspace.ClientParts.KillBricks:GetChildren()[46],
         workspace.ClientParts.KillBricks:GetChildren()[45],
-        workspace.Towers.CoSR:GetChildren()[2]:GetChildren()[54],
         workspace.Towers.CoSR.Obby:GetChildren()[595],
         workspace.Towers.CoSR.Obby:GetChildren()[1432],
         workspace.Towers.CoSR.Obby:GetChildren()[558],
@@ -421,7 +426,6 @@ return function()
         workspace.Towers.CoSR.Obby:GetChildren()[2057],
         workspace.Towers.CoSR.Obby:GetChildren()[2050],
         workspace.ClientParts:GetChildren()[17]:GetChildren()[1],
-        workspace.ClientParts.KillBricks:GetChildren()[93],
         workspace.ClientParts.ButtonPlatforms:GetChildren()[111],
         workspace.ClientParts.ButtonPlatforms:GetChildren()[112],
         workspace.ClientParts.ButtonPlatforms:GetChildren()[113],
