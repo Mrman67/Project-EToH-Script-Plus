@@ -342,7 +342,6 @@ return function()
         workspace.Towers.CoSR.Obby:GetChildren()[1712],
         workspace.Towers.CoSR.Obby:GetChildren()[19],
         workspace.ClientParts:GetChildren()[30]:GetChildren()[1],
-        workspace.ClientParts:GetChildren()[30]:GetChildren()[6]:GetChildren()[1]:GetChildren()[1]:GetChildren()[6]:GetChildren()[1],
         workspace.ClientParts:GetChildren()[14]:GetChildren()[1],
         workspace.ClientParts:GetChildren()[13]:GetChildren()[1],
         workspace.Towers.CoSR.Obby:GetChildren()[1680],
