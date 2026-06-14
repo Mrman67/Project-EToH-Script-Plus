@@ -74,5 +74,6 @@ return {
     },
     TowerRush = {
         { name = "R1TR", category = "Ring1", suggestedTime = { min = "39", sec = "0" }, isTowerRush = true, },
+        { name = "R14MTR", category = "Ring5", suggestedTime = { min = "0", sec = "50" }, isTowerRush = true, },
     },
 }
