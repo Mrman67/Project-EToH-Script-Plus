@@ -255,7 +255,6 @@ return function()
         workspace.Towers.ToTR.Obby:GetChildren()[990],
         workspace.ClientParts:GetChildren()[106]:GetChildren()[1],
         workspace.Towers.ToTR.Obby:GetChildren()[1010],
-        workspace.ClientParts.DistanceAnchoringObjects:GetChildren()[65]:GetChildren()[6],
         workspace.Towers.ToTR.Obby:GetChildren()[1012],
         workspace.Towers.ToTR.Obby:GetChildren()[1014],
         workspace.ClientParts.DistanceAnchoringObjects:GetChildren()[64]:GetChildren()[3],
