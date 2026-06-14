@@ -6,6 +6,7 @@ local Categories = {
     Ring5 = 9070980846,
     Ring6 = 9070981164,
     Ring9 = 9070982474,
+    Zone3 = 9071001563,
 }
 
 return {
