@@ -71,6 +71,7 @@ return {
         { name = "ToNV",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToTR",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToOC",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
+        { name = "ToTH",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "CoCR",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToIB",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToFN",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
