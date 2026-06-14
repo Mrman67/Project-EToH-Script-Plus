@@ -286,7 +286,6 @@ return function()
         workspace.Towers.CoSR.Obby:GetChildren()[1595],
         workspace.ClientParts.Morphers.Morpher:GetChildren()[2]:GetChildren()[1],
         workspace.ClientParts.Morphers.Morpher:GetChildren()[4],
-        workspace.ClientParts.Morphers.Morpher:GetChildren()[8],
         workspace.Towers.CoSR.Obby:GetChildren()[1661],
         workspace.Towers.CoSR.Obby:GetChildren()[1669],
         workspace.Towers.CoSR.Obby:GetChildren()[1604],
