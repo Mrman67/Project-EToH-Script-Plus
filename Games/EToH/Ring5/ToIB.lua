@@ -545,7 +545,6 @@ return function()
         workspace.Towers.ToIB.Obby:GetChildren()[1026],
         workspace.Towers.ToIB.Obby:GetChildren()[1743],
         workspace.Towers.ToIB.Obby:GetChildren()[835],
-        workspace.ClientParts:GetChildren()[21]:GetChildren()[5],
         workspace.Towers.ToIB.Obby:GetChildren()[1795],
         workspace.Towers.ToIB.Obby:GetChildren()[773],
         workspace.Towers.ToIB.Obby:GetChildren()[1186],
