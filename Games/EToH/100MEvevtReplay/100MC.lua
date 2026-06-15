@@ -1,6 +1,5 @@
 return function()
     return {
-        workspace.Towers["100MC"].Obby:GetChildren()[13],
         workspace.ClientParts.Morpher.Button.Button,
         workspace.ClientParts.Morpher.Button.NewMorph,
         workspace.Towers["100MC"].Obby:GetChildren()[16],
