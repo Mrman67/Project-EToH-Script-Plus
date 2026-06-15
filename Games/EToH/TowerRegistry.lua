@@ -7,6 +7,7 @@ local Categories = {
     Ring6 = 9070981164,
     Ring9 = 9070982474,
     Zone3 = 9071001563,
+    ["100MEventReplay"] = 115856553162061,
 }
 
 return {
@@ -92,6 +93,7 @@ return {
         { name = "ToIM",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToHH",  category = "Zone3", suggestedTime = { min = "3", sec = "0" } },
+        { name = "100MC",  category = ["100MEventReplay"], suggestedTime = { min = "0", sec = "10" } },
     },
     TowerRush = {
         { name = "R1TR", category = "Ring1", suggestedTime = { min = "39", sec = "0" }, isTowerRush = true, },
