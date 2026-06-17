@@ -481,7 +481,6 @@ return function()
         workspace.ClientParts:GetChildren()[37]:GetChildren()[4]:GetChildren()[3],
         workspace.Towers.CoL.Obby:GetChildren()[940],
         workspace.Towers.CoL.Obby:GetChildren()[943],
-        workspace.ClientParts:GetChildren()[36]:GetChildren()[8]
         workspace.ClientParts:GetChildren()[36]:GetChildren()[8],
         workspace.ClientParts:GetChildren()[22]:GetChildren()[4],
         workspace.ClientParts.ButtonPlatforms:GetChildren()[28],
