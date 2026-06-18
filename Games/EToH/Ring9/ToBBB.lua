@@ -119,7 +119,6 @@ return function()
         workspace.Towers.ToBBB.Obby:GetChildren()[656],
         workspace.Towers.ToBBB.Obby:GetChildren()[817],
         workspace.Towers.ToBBB.Obby:GetChildren()[834],
-        workspace.CurrentLobby.Terrain.LavaModel:GetChildren()[129],
         workspace.Towers.ToBBB.Obby:GetChildren()[829],
         workspace.Towers.ToBBB.Obby:GetChildren()[798],
         workspace.Towers.ToBBB.Obby:GetChildren()[649],
