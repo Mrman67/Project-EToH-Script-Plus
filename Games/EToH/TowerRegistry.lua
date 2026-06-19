@@ -1,5 +1,5 @@
 local Categories = {
-    Purgatorio = 9070958509,
+    Ring0 = 9070958509,
     Ring1 = 9070657865,
     Ring2 = 9070979698,
     Ring3 = 9070980083,
@@ -16,8 +16,8 @@ local Categories = {
 return {
     Categories = Categories,
     Towers = {
-        --Purgatorio
-        { name = "TNF",  category = "Purgatorio", suggestedTime = { min = "0", sec = "5" } },
+        --Ring 0 
+        { name = "TNF",  category = "Ring0", suggestedTime = { min = "0", sec = "5" } },
         --Ring 1
         { name = "NEAT",  category = "Ring1", suggestedTime = { min = "0", sec = "5" } },
         { name = "ToAST", category = "Ring1", suggestedTime = { min = "3", sec = "0" } },
