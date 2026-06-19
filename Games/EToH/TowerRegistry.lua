@@ -104,6 +104,7 @@ return {
         --Ring 9
         { name = "ToGO",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBBB",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
+        { name = "ToQT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "CoL",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToHA",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
