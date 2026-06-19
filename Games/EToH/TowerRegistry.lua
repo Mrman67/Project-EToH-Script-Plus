@@ -13,6 +13,7 @@ local Categories = {
 return {
     Categories = Categories,
     Towers = {
+        --Ring 1
         { name = "NEAT",  category = "Ring1", suggestedTime = { min = "0", sec = "5" } },
         { name = "ToAST", category = "Ring1", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToA",   category = "Ring1", suggestedTime = { min = "3", sec = "0" } },
@@ -30,6 +31,7 @@ return {
         { name = "CoLS:SE", category = "Ring1", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToTS",  category = "Ring1", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToIG",  category = "Ring1", suggestedTime = { min = "5", sec = "0" } },
+        --Ring 2
         { name = "MAT",  category = "Ring2", suggestedTime = { min = "0", sec = "5" } },
         { name = "ToPS",  category = "Ring2", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBH",  category = "Ring2", suggestedTime = { min = "3", sec = "0" } },
@@ -43,6 +45,7 @@ return {
         { name = "ToES",  category = "Ring2", suggestedTime = { min = "3", sec = "0" } },
         { name = "CoWS",  category = "Ring2", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToDC",  category = "Ring2", suggestedTime = { min = "3", sec = "0" } },
+        --Ring 3
         { name = "ToFT",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToIC",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToAT",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
@@ -56,6 +59,7 @@ return {
         { name = "CoHaD",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
         { name = "TAT",  category = "Ring3", suggestedTime = { min = "0", sec = "30" } },
         { name = "ToC",  category = "Ring3", suggestedTime = { min = "3", sec = "0" } },
+        --Ring 4
         { name = "ToSH",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToGG",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToTM",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
@@ -70,6 +74,7 @@ return {
         { name = "ToCN",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToVS",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToI",  category = "Ring4", suggestedTime = { min = "3", sec = "0" } },
+        --Ring 5
         { name = "ToNV",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "LAT",  category = "Ring5", suggestedTime = { min = "0", sec = "10" } },
         { name = "ToTR",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
@@ -85,6 +90,7 @@ return {
         { name = "ToFN",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToFO",  category = "Ring5", suggestedTime = { min = "3", sec = "0" } },
         { name = "R14MTR",  category = "Ring5", suggestedTime = { min = "0", sec = "50" } },
+        --Ring 6
         { name = "ToFJ",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToEP",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToRR",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
@@ -93,11 +99,14 @@ return {
         { name = "ToN",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
         { name = "CoSR",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToIM",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
+        --Ring 9
         { name = "ToGO",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBBB",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "CoL",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
+        --Zone 3
         { name = "ToHH",  category = "Zone3", suggestedTime = { min = "3", sec = "0" } },
+        --Pit of Misery
         { name = "ToVH",  category = "Pit-of-Misery", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToTRP",  category = "Pit-of-Misery", suggestedTime = { min = "3", sec = "0" } },
     },
