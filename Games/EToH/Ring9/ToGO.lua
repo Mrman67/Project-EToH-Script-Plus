@@ -138,7 +138,6 @@ return function()
         workspace.Towers.ToGO.Obby:GetChildren()[1030],
         workspace.Towers.ToGO.Obby:GetChildren()[1036],
         workspace.Towers.ToGO.Obby:GetChildren()[1037],
-        workspace.ClientParts.Key.KeyHitbox,
         workspace.ClientParts:GetChildren()[11]:GetChildren()[1],
         workspace.Towers.ToGO.Obby:GetChildren()[1032],
         workspace.Towers.ToGO.Obby:GetChildren()[1044],
