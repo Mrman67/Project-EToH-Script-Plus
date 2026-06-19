@@ -110,8 +110,6 @@ return function()
         workspace.Towers.ToGO.Obby:GetChildren()[706],
         workspace.Towers.ToGO.Obby:GetChildren()[772],
         workspace.Towers.ToGO.Obby:GetChildren()[779],
-        workspace.ClientParts:GetChildren()[14]:GetChildren()[1],
-        workspace.ClientParts:GetChildren()[14]:GetChildren()[6],
         workspace.Towers.ToGO.Obby:GetChildren()[792],
         workspace.Towers.ToGO.Obby:GetChildren()[795],
         workspace.Towers.ToGO.Obby:GetChildren()[828],
