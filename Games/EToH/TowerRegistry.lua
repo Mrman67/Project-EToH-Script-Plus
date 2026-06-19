@@ -106,6 +106,7 @@ return {
         { name = "ToBBB",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToQT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "CoL",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
+        { name = "ToPP",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToHA",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         --Zone 1
@@ -123,5 +124,6 @@ return {
     TowerRush = {
         { name = "R1TR", category = "Ring1", suggestedTime = { min = "39", sec = "0" }, isTowerRush = true, },
         { name = "R5TR", category = "Ring5", suggestedTime = { min = "33", sec = "0" }, isTowerRush = true, },
+        { name = "R9TR", category = "Ring9", suggestedTime = { min = "40", sec = "0" }, isTowerRush = true, },
     },
 }
