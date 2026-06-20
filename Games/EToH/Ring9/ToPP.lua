@@ -338,8 +338,6 @@ return function()
         workspace.Towers.ToPP.Obby:GetChildren()[1107],
         workspace.Towers.ToPP.Obby:GetChildren()[1104],
         workspace.Towers.ToPP.Obby:GetChildren()[1109],
-        workspace.ClientParts:GetChildren()[113]:GetChildren()[1],
-        workspace.ClientParts:GetChildren()[113]:GetChildren()[7],
         workspace.Towers.ToPP.Obby:GetChildren()[918],
         workspace.Towers.ToPP.Obby:GetChildren()[1194],
         workspace.Towers.ToPP.Obby:GetChildren()[1210],
