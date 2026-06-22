@@ -119,28 +119,26 @@ local function getTopPos(part)
 end
 
 -- Builds an ordered checkpoint list for an "all parts" tower (registry name marked
--- with a trailing "+"). Visits every BasePart under the tower's Obby in child-index
--- order ("by number order", matching the :GetChildren()[n] indices the route files
--- use), descending into non-part children (sections/models) so nested parts are
--- included, then finishes on the WinPad. Used as a no-route fallback so a tower can
--- be auto-played without a hand-made route file.
+-- with a trailing "+"). Visits only the plain "Part" objects directly under the
+-- tower's Obby, in child-index order ("by number order", matching the
+-- :GetChildren()[n] indices the route files use), then finishes on the WinPad.
+-- Section models, truss/wedge/mesh/union geometry, tightropes and other non-regular
+-- objects are skipped so the path follows the normal platforms. Used as a no-route
+-- fallback so a tower can be auto-played without a hand-made route file.
 local function getAllPartsCheckpoints(towerName)
     local towersFolder = workspace:FindFirstChild("Towers")
     if not towersFolder then return {} end
     local tower = towersFolder:FindFirstChild(towerName)
     if not tower then return {} end
     local checkpoints = {}
-    local function collect(inst)
-        for _, child in ipairs(inst:GetChildren()) do
-            if child:IsA("BasePart") then
+    local obby = tower:FindFirstChild("Obby")
+    if obby then
+        for _, child in ipairs(obby:GetChildren()) do
+            if child.ClassName == "Part" then
                 table.insert(checkpoints, child)
-            else
-                collect(child)
             end
         end
     end
-    local obby = tower:FindFirstChild("Obby")
-    if obby then collect(obby) end
     local winPad = tower:FindFirstChild("WinPad")
     if winPad and winPad:IsA("BasePart") then
         table.insert(checkpoints, winPad)
