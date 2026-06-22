@@ -118,6 +118,36 @@ local function getTopPos(part)
     return part.Position + Vector3.new(0, halfTop + PLAYER_FOOT_OFFSET, 0)
 end
 
+-- Builds an ordered checkpoint list for an "all parts" tower (registry name marked
+-- with a trailing "+"). Visits every BasePart under the tower's Obby in child-index
+-- order ("by number order", matching the :GetChildren()[n] indices the route files
+-- use), descending into non-part children (sections/models) so nested parts are
+-- included, then finishes on the WinPad. Used as a no-route fallback so a tower can
+-- be auto-played without a hand-made route file.
+local function getAllPartsCheckpoints(towerName)
+    local towersFolder = workspace:FindFirstChild("Towers")
+    if not towersFolder then return {} end
+    local tower = towersFolder:FindFirstChild(towerName)
+    if not tower then return {} end
+    local checkpoints = {}
+    local function collect(inst)
+        for _, child in ipairs(inst:GetChildren()) do
+            if child:IsA("BasePart") then
+                table.insert(checkpoints, child)
+            else
+                collect(child)
+            end
+        end
+    end
+    local obby = tower:FindFirstChild("Obby")
+    if obby then collect(obby) end
+    local winPad = tower:FindFirstChild("WinPad")
+    if winPad and winPad:IsA("BasePart") then
+        table.insert(checkpoints, winPad)
+    end
+    return checkpoints
+end
+
 local currentPlaceId = game.PlaceId
 
 for _, tower in ipairs(Registry.Towers or {}) do
@@ -125,11 +155,17 @@ for _, tower in ipairs(Registry.Towers or {}) do
     local placeId = Registry.Categories[tower.category]
     if placeId ~= currentPlaceId then continue end
     SuggestedTimes[n] = tower.suggestedTime
-    local tpName = getTpFrameName(n)
+    -- A "+" in the registry name (e.g. "ToER+") marks an "all parts" tower: autoplay
+    -- visits every part of the Obby in number order instead of a curated route file.
+    -- The "+" is not part of the real folder name, so strip it for workspace lookups.
+    local allParts = n:find("%+") ~= nil
+    local tpName = getTpFrameName((n:gsub("%+", "")))
     TowerConfigs[n] = {
         tpFrame    = function() return workspace.Towers[tpName].Teleporter.Teleporter.TPFRAME end,
         teleportTo = function() return workspace.Towers[tpName].Teleporter.TeleportTo end,
         routeUrl   = baseRepo .. tower.category .. "/" .. n .. ".lua",
+        allParts   = allParts,
+        baseName   = tpName,
     }
     table.insert(DropdownValues, n)
 end
@@ -327,15 +363,21 @@ local ShowRouteToggle = TowerBox:AddToggle("ShowRoute", {
             local selected = Library.Options.TowerSelect.Value
             local config   = TowerConfigs[selected]
             if not config then return end
-            local routeSrc
-            local ok = pcall(function() routeSrc = game:HttpGet(config.routeUrl) end)
-            if not ok or not routeSrc then return end
-            local fn = loadstring(routeSrc)
-            if not fn then return end
-            local ok2, getCheckpoints = pcall(fn)
-            if not ok2 or type(getCheckpoints) ~= "function" then return end
-            local ok3, checkpoints = pcall(getCheckpoints)
-            if not ok3 or type(checkpoints) ~= "table" then return end
+            local checkpoints
+            if config.allParts then
+                checkpoints = getAllPartsCheckpoints(config.baseName)
+            else
+                local routeSrc
+                local ok = pcall(function() routeSrc = game:HttpGet(config.routeUrl) end)
+                if not ok or not routeSrc then return end
+                local fn = loadstring(routeSrc)
+                if not fn then return end
+                local ok2, getCheckpoints = pcall(fn)
+                if not ok2 or type(getCheckpoints) ~= "function" then return end
+                local ok3, result = pcall(getCheckpoints)
+                if not ok3 or type(result) ~= "table" then return end
+                checkpoints = result
+            end
             local steps = {}
             local prevPos = game:GetService("Players").LocalPlayer.Character and
                 game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and
@@ -892,13 +934,15 @@ TowerBox:AddButton({
         end
 
         local routeSrc
-        local ok0, err0 = pcall(function()
-            routeSrc = game:HttpGet(config.routeUrl)
-        end)
-        if not ok0 or not routeSrc then
-            Library:Notify({ Title = "Auto Play", Description = "Fetch failed: " .. tostring(err0), Duration = 5 })
-            isAutoPlaying = false
-            return
+        if not config.allParts then
+            local ok0, err0 = pcall(function()
+                routeSrc = game:HttpGet(config.routeUrl)
+            end)
+            if not ok0 or not routeSrc then
+                Library:Notify({ Title = "Auto Play", Description = "Fetch failed: " .. tostring(err0), Duration = 5 })
+                isAutoPlaying = false
+                return
+            end
         end
         local ok, tpFrame = pcall(config.tpFrame)
         if not ok or not tpFrame then
@@ -962,18 +1006,25 @@ TowerBox:AddButton({
         until hrp and (hrp.Position - posBeforeTP).Magnitude > 0.1
         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.W, false, game)
         if checkDied() then return end
-        Library:Notify({ Title = "Auto Play", Description = "Loading " .. selected .. " route...", Duration = 3 })
-        local fn, fnErr = loadstring(routeSrc)
-        if not fn then
-            Library:Notify({ Title = "Auto Play", Description = "Parse failed: " .. tostring(fnErr), Duration = 5 })
-            isAutoPlaying = false
-            return
-        end
-        local ok1, getCheckpoints = pcall(fn)
-        if not ok1 or type(getCheckpoints) ~= "function" then
-            Library:Notify({ Title = "Auto Play", Description = "Load failed: " .. tostring(getCheckpoints), Duration = 5 })
-            isAutoPlaying = false
-            return
+        local getCheckpoints
+        if config.allParts then
+            Library:Notify({ Title = "Auto Play", Description = "Building " .. selected .. " all-parts route...", Duration = 3 })
+            getCheckpoints = function() return getAllPartsCheckpoints(config.baseName) end
+        else
+            Library:Notify({ Title = "Auto Play", Description = "Loading " .. selected .. " route...", Duration = 3 })
+            local fn, fnErr = loadstring(routeSrc)
+            if not fn then
+                Library:Notify({ Title = "Auto Play", Description = "Parse failed: " .. tostring(fnErr), Duration = 5 })
+                isAutoPlaying = false
+                return
+            end
+            local ok1, result = pcall(fn)
+            if not ok1 or type(result) ~= "function" then
+                Library:Notify({ Title = "Auto Play", Description = "Load failed: " .. tostring(result), Duration = 5 })
+                isAutoPlaying = false
+                return
+            end
+            getCheckpoints = result
         end
         local checkpoints
         local lastErr = ""
