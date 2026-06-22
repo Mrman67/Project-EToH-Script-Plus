@@ -16,11 +16,6 @@ local Categories = {
 
 return {
     Categories = Categories,
-    -- A trailing "+" in a tower's name enables "all parts" autoplay: instead of a
-    -- curated route file, the script walks the regular Part platforms directly under
-    -- the tower's Obby in number order (the :GetChildren()[n] order), skipping section
-    -- models, truss/wedge/mesh geometry, etc. No route file is needed for "+" towers.
-    -- Example: { name = "ToER+", category = "Ring7", suggestedTime = { min = "3", sec = "30" } },
     Towers = {
         --Ring 1
         { name = "ToIG",  category = "Ring1", suggestedTime = { min = "5", sec = "0" } },
@@ -37,9 +32,7 @@ return {
         --Ring 6
         { name = "ToIM",  category = "Ring6", suggestedTime = { min = "3", sec = "0" } },
         --Ring 7
-        { name = "ToER+",  category = "Ring7", suggestedTime = { min = "3", sec = "30" } },
-        -- Uncomment for an "all parts" (no route file) variant of ToER:
-        -- { name = "ToER+",  category = "Ring7", suggestedTime = { min = "3", sec = "30" } },
+        { name = "ToER",  category = "Ring7", suggestedTime = { min = "3", sec = "30" } },
         --Ring 9
         { name = "ToHA",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
