@@ -87,7 +87,6 @@ local gameConfigs = {
         placeIds = { 72577867400900, 129965911879791 },
     },
 }
-}
 
 local selectedFolder = "EToH"  -- default fallback
 for _, gc in ipairs(gameConfigs) do
