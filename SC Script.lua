@@ -82,10 +82,11 @@ local gameConfigs = {
         folder   = "EToH",
         placeIds = { 9070657865, 9070979698 },
     },
-    {
-        folder   = "st",
-        placeIds = { 72577867400900, 129965911879791 },
-    },
+    -- ADD NEW FANGAMES BELOW:
+    -- {
+    --     folder   = "MyFangame",
+    --     placeIds = { 1234567890 },
+    -- },
 }
 
 local selectedFolder = "EToH"  -- default fallback
@@ -145,17 +146,46 @@ end
 
 local currentPlaceId = game.PlaceId
 
+local function findNearestPortal(towerName)
+    local tower = workspace.Towers[towerName]
+    if not tower then return nil end
+    local refPart = tower:FindFirstChildWhichIsA("BasePart", true)
+    if not refPart then return nil end
+    local refPos = refPart.Position
+    local closest, closestDist = nil, math.huge
+    if workspace:FindFirstChild("Portals") then
+        for _, v in ipairs(workspace.Portals:GetChildren()) do
+            if v:IsA("BasePart") then
+                local dist = (v.Position - refPos).Magnitude
+                if dist < closestDist then
+                    closest = v
+                    closestDist = dist
+                end
+            end
+        end
+    end
+    return closest
+end
+
 for _, tower in ipairs(Registry.Towers) do
     local n = tower.name
     local placeId = Registry.Categories[tower.category]
     if placeId ~= currentPlaceId then continue end
     SuggestedTimes[n] = tower.suggestedTime
     local tpName = getTpFrameName(n)
-    TowerConfigs[n] = {
-        tpFrame    = function() return workspace.Towers[tpName].Teleporter.Teleporter.TPFRAME end,
-        teleportTo = function() return workspace.Towers[tpName].Teleporter.TeleportTo end,
-        routeUrl   = baseRepo .. tower.category .. "/" .. n .. ".lua",
-    }
+    if selectedFolder == "st" then
+        TowerConfigs[n] = {
+            tpFrame    = function() return findNearestPortal(tpName) end,
+            teleportTo = function() return findNearestPortal(tpName) end,
+            routeUrl   = baseRepo .. tower.category .. "/" .. n .. ".lua",
+        }
+    else
+        TowerConfigs[n] = {
+            tpFrame    = function() return workspace.Towers[tpName].Teleporter.Teleporter.TPFRAME end,
+            teleportTo = function() return workspace.Towers[tpName].Teleporter.TeleportTo end,
+            routeUrl   = baseRepo .. tower.category .. "/" .. n .. ".lua",
+        }
+    end
     table.insert(DropdownValues, n)
 end
 
