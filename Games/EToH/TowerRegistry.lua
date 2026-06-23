@@ -36,6 +36,7 @@ return {
         --Ring 9
         { name = "ToHA",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToBT",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
+        { name = "ToCA",  category = "Ring9", suggestedTime = { min = "3", sec = "0" } },
         --Zone 1
         { name = "ToTL",  category = "Zone1", suggestedTime = { min = "1", sec = "0" } },
         --Zone 2
