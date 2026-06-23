@@ -83,10 +83,10 @@ local gameConfigs = {
         placeIds = { 9070657865, 9070979698 },
     },
     -- ADD NEW FANGAMES BELOW:
-    -- {
-    --     folder   = "MyFangame",
-    --     placeIds = { 1234567890 },
-    -- },
+    {
+        folder   = "st",
+        placeIds = { 72577867400900, 129965911879791 },
+    },
 }
 
 local selectedFolder = "EToH"  -- default fallback
