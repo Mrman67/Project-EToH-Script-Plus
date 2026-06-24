@@ -1754,6 +1754,18 @@ end
 MenuGroup:AddDivider()
 MenuGroup:AddLabel("Menu bind")
     :AddKeyPicker("MenuKeybind", { Default = "RightShift", NoUI = true, Text = "Menu keybind" })
+MenuGroup:AddButton("Rejoin", function()
+    local TeleportService = game:GetService("TeleportService")
+    local player = game:GetService("Players").LocalPlayer
+    Library:Notify({ Title = "Rejoin", Description = "Rejoining server...", Duration = 3 })
+    -- Try to rejoin the same server first; fall back to any server if it's gone/full.
+    local ok = pcall(function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+    end)
+    if not ok then
+        pcall(function() TeleportService:Teleport(game.PlaceId, player) end)
+    end
+end)
 MenuGroup:AddButton("Unload", function()
     _G.ProjectEToHLoaded = nil
     Library:Unload()
