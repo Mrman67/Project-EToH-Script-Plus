@@ -1510,6 +1510,28 @@ PlayerBox:AddToggle("InfiniteJump", {
         end
     end,
 })
+
+PlayerBox:AddToggle("AntiAFK", {
+    Text    = "Anti AFK",
+    Default = false,
+    Tooltip = "Prevents being kicked for inactivity",
+    Callback = function(state)
+        if _G.AntiAFKConn then
+            _G.AntiAFKConn:Disconnect()
+            _G.AntiAFKConn = nil
+        end
+        if state then
+            local VirtualUser = game:GetService("VirtualUser")
+            local Players     = game:GetService("Players")
+            -- Idled fires just before Roblox kicks for inactivity; a VirtualUser
+            -- right-click resets the idle timer without affecting gameplay.
+            _G.AntiAFKConn = Players.LocalPlayer.Idled:Connect(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new())
+            end)
+        end
+    end,
+})
 local godmodeOriginal = nil
 local godmodeV2Connection = nil
 local godmodeKillBrickConn = nil
