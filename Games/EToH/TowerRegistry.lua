@@ -56,6 +56,7 @@ return {
         --Zone 9
         { name = "ToEMP",  category = "Zone9", suggestedTime = { min = "3", sec = "0" } },
         --Pit of Misery
+        { name = "ToMDC",  category = "Pit-of-Misery", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToVH",  category = "Pit-of-Misery", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToTRP",  category = "Pit-of-Misery", suggestedTime = { min = "3", sec = "0" } },
         { name = "ToEV",  category = "Pit-of-Misery", suggestedTime = { min = "3", sec = "0" } },
