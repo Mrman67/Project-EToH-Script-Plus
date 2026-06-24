@@ -120,12 +120,21 @@ end
 
 local currentPlaceId = game.PlaceId
 
+-- True if a tower's folder is actually loaded in workspace.Towers right now. Used so
+-- the dropdown shows the towers physically present in the current place even if the
+-- registry's hardcoded category PlaceId no longer matches (e.g. after a game update),
+-- instead of silently filtering everything out and leaving a blank tower list.
+local function towerFolderPresent(name)
+    local towersFolder = workspace:FindFirstChild("Towers")
+    return towersFolder ~= nil and towersFolder:FindFirstChild(name) ~= nil
+end
+
 for _, tower in ipairs(Registry.Towers or {}) do
     local n = tower.name
     local placeId = Registry.Categories[tower.category]
-    if placeId ~= currentPlaceId then continue end
-    SuggestedTimes[n] = tower.suggestedTime
     local tpName = getTpFrameName(n)
+    if placeId ~= currentPlaceId and not towerFolderPresent(tpName) then continue end
+    SuggestedTimes[n] = tower.suggestedTime
     TowerConfigs[n] = {
         tpFrame    = function() return workspace.Towers[tpName].Teleporter.Teleporter.TPFRAME end,
         teleportTo = function() return workspace.Towers[tpName].Teleporter.TeleportTo end,
@@ -137,7 +146,7 @@ end
 for _, tr in ipairs(Registry.TowerRush or {}) do
     local n = tr.name
     local placeId = Registry.Categories[tr.category]
-    if placeId ~= currentPlaceId then continue end
+    if placeId ~= currentPlaceId and not towerFolderPresent(n) then continue end
     SuggestedTimes[n] = tr.suggestedTime
     TowerConfigs[n] = {
         tpFrame = function()
@@ -152,6 +161,20 @@ for _, tr in ipairs(Registry.TowerRush or {}) do
         isTowerRush = true,
     }
     table.insert(DropdownValues, n)
+end
+
+-- Surface why the tower list is empty instead of failing silently. This usually means
+-- the registry didn't load, or none of its towers match this place (PlaceId may have
+-- changed in a game update) and none are loaded in workspace.Towers.
+if #DropdownValues == 0 then
+    local towersFolder = workspace:FindFirstChild("Towers")
+    local loadedCount = towersFolder and #towersFolder:GetChildren() or 0
+    Library:Notify({
+        Title       = "Project EToH Script",
+        Description  = ("No towers found (PlaceId %s, registry towers: %d, loaded in workspace.Towers: %d). The registry may be out of date for this game version.")
+            :format(tostring(currentPlaceId), #(Registry.Towers or {}), loadedCount),
+        Duration    = 10,
+    })
 end
 
 local TowerBox = Tabs.Main:AddLeftGroupbox("Towers")
