@@ -1338,8 +1338,12 @@ PlayerBox:AddToggle("Noclip", {
             noclipConnection = RunService.Stepped:Connect(function()
                 local char = Players.LocalPlayer.Character
                 if not char then return end
+                -- Disable collision on every character part, including the
+                -- HumanoidRootPart. Some EToH areas make the HRP collidable (which is
+                -- the "floor collision" that blocked noclip there), so it must not be
+                -- skipped or noclip fails in those areas.
                 for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") and part.CanCollide == true and part.Name ~= "HumanoidRootPart" then
+                    if part:IsA("BasePart") and part.CanCollide == true then
                         part.CanCollide = false
                     end
                 end
