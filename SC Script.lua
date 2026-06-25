@@ -53,7 +53,7 @@ print((sUNCSupport.queueteleport     and "✅" or "❌") .. " queueonteleport")
 local HttpService = game:GetService("HttpService")
 local version = "Unknown"
 local ok, result = pcall(function()
-    local data = HttpService:JSONDecode(game:HttpGet("https://raw.githubusercontent.com/cslp1/Project-SC-Script/refs/heads/main/version.json"))
+    local data = HttpService:JSONDecode(game:HttpGet("https://raw.githubusercontent.com/Mrman67/Project-SC-Script/refs/heads/main/version.json"))
     return data.version
 end)
 if ok and result then version = result end
@@ -74,8 +74,8 @@ local Options  = Library.Options
 local isAutoPlaying = false
 local currentResolvedSteps = nil
 
-local baseRepo = "https://raw.githubusercontent.com/cslp1/Project-SC-Script/refs/heads/main/Games/EToH/"
-local registryUrl = "https://raw.githubusercontent.com/cslp1/Project-SC-Script/refs/heads/main/Games/EToH/TowerRegistry.lua"
+local baseRepo = "https://raw.githubusercontent.com/Mrman67/Project-SC-Script/refs/heads/main/Games/EToH/"
+local registryUrl = "https://raw.githubusercontent.com/Mrman67/Project-SC-Script/refs/heads/main/Games/EToH/TowerRegistry.lua"
 
 local Registry
 local ok_reg, reg_src = pcall(function() return game:HttpGet(registryUrl) end)
@@ -1818,7 +1818,7 @@ MenuGroup:AddToggle("AutoExecute", {
                     end
                 end)
                 SCRIPT_KEY = "KEYLESS"
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/cslp1/Project-SC-Script/refs/heads/main/SC%20Script.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Mrman67/Project-SC-Script/refs/heads/main/SC%20Script.lua"))()
             ]])
         end
     end,
