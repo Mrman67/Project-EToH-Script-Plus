@@ -1862,6 +1862,11 @@ MenuGroup:AddButton("Unload", function()
 end)
 Library.ToggleKeybind = Options.MenuKeybind
 
+local CreditsGroup = Tabs.UISettings:AddRightGroupbox("Credits")
+CreditsGroup:AddLabel('<font color="rgb(255,210,70)">[Mr.man]</font>  Owner', true)
+CreditsGroup:AddLabel('<font color="rgb(90,200,255)">[MaybeIsRealZack]</font>  Original Creator', true)
+CreditsGroup:AddLabel('<font color="rgb(120,230,120)">[canadianeditz]</font>  Contributor', true)
+
 
 ThemeManager:SetLibrary(Library)
 SaveManager:SetLibrary(Library)
