@@ -234,6 +234,13 @@ TowerBox:AddInput("CompletionSec", {
     Numeric     = true,
     Placeholder = "0",
 })
+TowerBox:AddInput("RepeatCount", {
+    Text        = "Repeat Count",
+    Default     = "1",
+    Numeric     = true,
+    Placeholder = "1",
+    Tooltip     = "Auto Play the tower this many times. The Completion Time above is the TOTAL for all repeats, split evenly across them.",
+})
 local routeHighlights = {}
 local routeUpdateConn = nil
 
@@ -923,6 +930,19 @@ TowerBox:AddButton({
             isAutoPlaying = false
             return
         end
+
+        local repeatCount = math.max(math.floor(tonumber(Library.Options.RepeatCount.Value) or 1), 1)
+        local totalReqMin = tonumber(Library.Options.CompletionMin.Value) or 0
+        local totalReqSec = tonumber(Library.Options.CompletionSec.Value) or 0
+        -- Completion Time is the TOTAL across all repeats, so each run gets an even share.
+        local perRepeatTime = math.max((totalReqMin * 60 + totalReqSec) / repeatCount, 1)
+
+        for rep = 1, repeatCount do
+        local repTag = repeatCount > 1 and (" [" .. rep .. "/" .. repeatCount .. "]") or ""
+        -- Only the first run enters from the lobby teleporter. Repeats simply re-walk the
+        -- route from inside the tower -- the route walk flies the character (noclip is on)
+        -- back to the first checkpoint -- so it never returns to the lobby.
+        if rep == 1 then
         local ok, tpFrame = pcall(config.tpFrame)
         if not ok or not tpFrame then
             Library:Notify({ Title = "Auto Play", Description = selected .. " teleporter not found!", Duration = 3 })
@@ -965,10 +985,6 @@ TowerBox:AddButton({
             task.wait(0.1)
         end
         if checkDied() then return end
-        local totalMin  = tonumber(Library.Options.CompletionMin.Value) or 0
-        local totalSec  = tonumber(Library.Options.CompletionSec.Value) or 0
-        local totalTime = totalMin * 60 + totalSec
-        local deadline  = os.clock() + math.max(totalTime, 1)
         Library:Notify({ Title = "Auto Play", Description = "Waiting for teleport to complete...", Duration = 3 })
         local posBeforeTP = hrp.Position
         local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -985,6 +1001,8 @@ TowerBox:AddButton({
         until hrp and (hrp.Position - posBeforeTP).Magnitude > 0.1
         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.W, false, game)
         if checkDied() then return end
+        end -- first-run lobby entry only
+        local deadline = os.clock() + perRepeatTime
         Library:Notify({ Title = "Auto Play", Description = "Loading " .. selected .. " route...", Duration = 3 })
         local fn, fnErr = loadstring(routeSrc)
         if not fn then
@@ -1128,9 +1146,19 @@ TowerBox:AddButton({
             end
         end
         if not died then
-            Library:Notify({ Title = "Auto Play", Description = "Complete!", Duration = 3 })
-            clearRouteHighlights()
+            Library:Notify({ Title = "Auto Play", Description = "Complete!" .. repTag, Duration = 3 })
         end
+        if died then break end
+        end -- repeat loop
+
+        if not died then
+            Library:Notify({
+                Title       = "Auto Play",
+                Description  = repeatCount > 1 and ("All " .. repeatCount .. " repeats complete!") or "Complete!",
+                Duration    = 5,
+            })
+        end
+        clearRouteHighlights()
         stopAutoNoclip()
         isAutoPlaying = false
         currentResolvedSteps = nil
