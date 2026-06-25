@@ -1847,13 +1847,36 @@ MenuGroup:AddLabel("Menu bind")
 MenuGroup:AddButton("Rejoin", function()
     local TeleportService = game:GetService("TeleportService")
     local player = game:GetService("Players").LocalPlayer
+    local inPrivate = game.PrivateServerId ~= ""
     Library:Notify({ Title = "Rejoin", Description = "Rejoining server...", Duration = 3 })
-    -- Try to rejoin the same server first; fall back to any server if it's gone/full.
-    local ok = pcall(function()
+
+    local function onFail(msg)
+        -- In a private/VIP server, Teleport(PlaceId) targets a restricted public place
+        -- (Error 773) and Roblox blocks client teleports into the private server, so
+        -- there's no client-side way to rejoin it -- report instead of throwing 773.
+        -- In a public server, fall back to a fresh server.
+        if inPrivate then
+            Library:Notify({ Title = "Rejoin", Description = "Can't rejoin a private server from a script (Roblox restricts it)." .. (msg and (" " .. tostring(msg)) or ""), Duration = 8 })
+        else
+            pcall(function() TeleportService:Teleport(game.PlaceId, player) end)
+        end
+    end
+
+    -- Catch async teleport failures so we handle them ourselves instead of the raw dialog.
+    local conn
+    conn = TeleportService.TeleportInitFailed:Connect(function(plr, _result, msg)
+        if plr ~= player then return end
+        conn:Disconnect()
+        onFail(msg)
+    end)
+
+    -- TeleportToPlaceInstance rejoins the exact server you're in (works in public).
+    local ok, err = pcall(function()
         TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
     end)
     if not ok then
-        pcall(function() TeleportService:Teleport(game.PlaceId, player) end)
+        conn:Disconnect()
+        onFail(err)
     end
 end)
 MenuGroup:AddButton("Unload", function()
