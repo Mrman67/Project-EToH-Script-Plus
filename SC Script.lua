@@ -954,6 +954,15 @@ TowerBox:AddButton({
 
         for rep = 1, repeatCount do
         local repTag = repeatCount > 1 and (" [" .. rep .. "/" .. repeatCount .. "]") or ""
+        if rep > 1 then
+            -- Give the game ~5s to process the previous win before re-entering.
+            Library:Notify({ Title = "Auto Play", Description = "Next run in 5s..." .. repTag, Duration = 4 })
+            local waitUntil = os.clock() + 5
+            while os.clock() < waitUntil do
+                if checkDied() then return end
+                task.wait(0.1)
+            end
+        end
         -- Each run is a full Auto Play pass -- go to the teleporter, enter the tower, and
         -- walk the route -- the same as pressing Auto Play again after a completion.
         local ok, tpFrame = pcall(config.tpFrame)
