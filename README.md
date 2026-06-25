@@ -2,5 +2,5 @@
 
 ### Script:
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Mrman67/Project-SC-Script/refs/heads/main/SC%20Script.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Mrman67/Project-EToH-Script-Plus/refs/heads/main/SC%20Script.lua"))()
 ```
