@@ -1644,94 +1644,109 @@ local function isKillBrickPart(inst)
     return false
 end
 
-local function disableGodmode()
+-- Godmode is split into independent methods -- enable any one or several at once.
+
+-- Hook: intercept DamageEvent:FireServer through __namecall so damage never reaches
+-- the server. Cleanest, but needs hookmetamethod + getnamecallmethod support.
+local function setGodmodeHook(state)
     if godmodeOriginal then
         hookmetamethod(game, "__namecall", godmodeOriginal)
         godmodeOriginal = nil
     end
+    if not state then return end
+    local damageEvent = game:GetService("ReplicatedStorage"):WaitForChild("DamageEvent")
+    godmodeOriginal = hookmetamethod(game, "__namecall", function(self, ...)
+        if self == damageEvent and getnamecallmethod() == "FireServer" then
+            return
+        end
+        return godmodeOriginal(self, ...)
+    end)
+end
+
+-- Auto-Heal: heal back to full whenever health drops (heal loop via DamageEvent).
+local function setGodmodeHeal(state)
     if godmodeV2Connection then
         godmodeV2Connection:Disconnect()
         godmodeV2Connection = nil
     end
+    if not state then return end
+    local Players    = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local damageEvent = game:GetService("ReplicatedStorage"):WaitForChild("DamageEvent")
+    godmodeV2Connection = RunService.Heartbeat:Connect(function()
+        local char = Players.LocalPlayer.Character
+        if not char then return end
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.Health < humanoid.MaxHealth then
+            damageEvent:FireServer(-humanoid.MaxHealth)
+        end
+    end)
+end
+
+-- Kill Bricks: set CanTouch = false on every kill brick so it can't register a hit.
+local function setGodmodeKillBricks(state)
     if godmodeKillBrickConn then
         godmodeKillBrickConn:Disconnect()
         godmodeKillBrickConn = nil
     end
-    for part in pairs(godmodeKillBrickParts) do
-        if part and part.Parent then
-            part.CanTouch = true
+    if not state then
+        for part in pairs(godmodeKillBrickParts) do
+            if part and part.Parent then part.CanTouch = true end
+        end
+        godmodeKillBrickParts = {}
+        return
+    end
+    local function scanAndDisable(inst)
+        if isKillBrickPart(inst) and inst.CanTouch then
+            inst.CanTouch = false
+            godmodeKillBrickParts[inst] = true
         end
     end
-    godmodeKillBrickParts = {}
+    for _, inst in ipairs(workspace:GetDescendants()) do
+        scanAndDisable(inst)
+    end
+    godmodeKillBrickConn = workspace.DescendantAdded:Connect(scanAndDisable)
 end
 
-PlayerBox:AddToggle("Godmode", {
-    Text    = "Godmode",
-    Default = true,
-    Tooltip = "Prevents taking damage",
+PlayerBox:AddToggle("GodmodeHook", {
+    Text    = "Godmode: Hook Damage",
+    Default = sUNCSupport.Godmode,
+    Tooltip = "Blocks ALL damage by hooking the game's DamageEvent so the damage call never reaches the server -- you simply never take damage. The cleanest, most reliable method, but needs executor support for hookmetamethod + getnamecallmethod (greyed out if unsupported).",
     Callback = function(state)
-        disableGodmode()
-        if not state then
+        if state and not sUNCSupport.Godmode then
+            Library.Toggles.GodmodeHook:SetValue(false)
             return
         end
-        local mode = Library.Options.GodmodeMode.Value
-        if mode == "hookmetamethod" then
-            if not sUNCSupport.Godmode then
-                Library.Toggles.Godmode:SetValue(false)
-                return
-            end
-            local damageEvent = game:GetService("ReplicatedStorage"):WaitForChild("DamageEvent")
-            godmodeOriginal = hookmetamethod(game, "__namecall", function(self, ...)
-                if self == damageEvent and getnamecallmethod() == "FireServer" then
-                    return
-                end
-                return godmodeOriginal(self, ...)
-            end)
-        elseif mode == "DamageEvent" then
-            local Players    = game:GetService("Players")
-            local RunService = game:GetService("RunService")
-            local damageEvent = game:GetService("ReplicatedStorage"):WaitForChild("DamageEvent")
-            godmodeV2Connection = RunService.Heartbeat:Connect(function()
-                local char = Players.LocalPlayer.Character
-                if not char then return end
-                local humanoid = char:FindFirstChildOfClass("Humanoid")
-                if humanoid and humanoid.Health < humanoid.MaxHealth then
-                    damageEvent:FireServer(-humanoid.MaxHealth)
-                end
-            end)
-        elseif mode == "CanTouch" then
-            local function scanAndDisable(inst)
-                if isKillBrickPart(inst) and inst.CanTouch then
-                    inst.CanTouch = false
-                    godmodeKillBrickParts[inst] = true
-                end
-            end
-            for _, inst in ipairs(workspace:GetDescendants()) do
-                scanAndDisable(inst)
-            end
-            godmodeKillBrickConn = workspace.DescendantAdded:Connect(scanAndDisable)
-        end
+        setGodmodeHook(state)
     end,
 })
 
-PlayerBox:AddDropdown("GodmodeMode", {
-    Text    = "Godmode Mode",
-    Values  = { "hookmetamethod", "DamageEvent", "CanTouch" },
-    Default = sUNCSupport.Godmode and "hookmetamethod" or "DamageEvent",
-    Callback = function(value)
-        disableGodmode()
-        if Library.Toggles.Godmode.Value then
-            Library.Toggles.Godmode:SetValue(false)
-            Library.Toggles.Godmode:SetValue(true)
-        end
+PlayerBox:AddToggle("GodmodeHeal", {
+    Text    = "Godmode: Auto-Heal",
+    Default = not sUNCSupport.Godmode,
+    Tooltip = "Instantly heals you back to full whenever you take damage (a loop that fires the DamageEvent with negative damage). Works on ANY executor, but you may flash a bit of damage before healing, so it's less clean than the hook.",
+    Callback = function(state)
+        setGodmodeHeal(state)
+    end,
+})
+
+PlayerBox:AddToggle("GodmodeKillBricks", {
+    Text    = "Godmode: Disable Kill Bricks",
+    Default = false,
+    Tooltip = "Turns off touch detection on every kill brick (parts named \"Kill Brick\" or holding a 'kills' value), including ones spawned later, so they can't kill you. Stops kill-brick deaths at the source but does nothing against other damage.",
+    Callback = function(state)
+        setGodmodeKillBricks(state)
     end,
 })
 
 if not sUNCSupport.Godmode then
-    Library.Options.GodmodeMode:SetDisabledValues({ "hookmetamethod" })
+    Library.Toggles.GodmodeHook:SetDisabled(true)
 end
 
-Library.Toggles.Godmode:SetValue(true)
+-- Apply the current (default or saved) states on load.
+setGodmodeHook(Library.Toggles.GodmodeHook.Value)
+setGodmodeHeal(Library.Toggles.GodmodeHeal.Value)
+setGodmodeKillBricks(Library.Toggles.GodmodeKillBricks.Value)
 
 Library.Toggles.UseSuggestedTime:SetValue(true)
 local MenuGroup = Tabs.UISettings:AddLeftGroupbox("Menu")
