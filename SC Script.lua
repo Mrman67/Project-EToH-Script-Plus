@@ -954,6 +954,7 @@ TowerBox:AddButton({
 
         for rep = 1, repeatCount do
         local repTag = repeatCount > 1 and (" [" .. rep .. "/" .. repeatCount .. "]") or ""
+        warn(("[ProjectEToH] Auto Play run %d/%d (%s) budget=%.1fs"):format(rep, repeatCount, tostring(selected), perRepeatTime))
         if rep > 1 then
             -- Completing a tower sends us back to the lobby, which respawns the character.
             -- Wait for that respawn to finish (so it can't interrupt the next run mid-route),
@@ -995,6 +996,7 @@ TowerBox:AddButton({
                 stopReason = "died"
                 diedConn:Disconnect()
             end)
+            warn(("[ProjectEToH] run %d: respawn wait done (respawned=%s, hrp=%s)"):format(rep, tostring(respawned), tostring(hrp ~= nil)))
         end
         -- Each run is a full Auto Play pass -- go to the teleporter, enter the tower, and
         -- walk the route -- the same as pressing Auto Play again after a completion.
@@ -1104,6 +1106,7 @@ TowerBox:AddButton({
         end
         local remainingTime = math.max(deadline - os.clock(), 1)
         Library:Notify({ Title = "Auto Play", Description = "Starting route, " .. #resolvedSteps .. " checkpoints", Duration = 3 })
+        warn(("[ProjectEToH] run %d: walking %d steps, %.1fs left"):format(rep, #resolvedSteps, math.max(deadline - os.clock(), 0)))
         local remainingDistances = {}
         local cumDist = 0
         for i = #resolvedSteps, 1, -1 do
@@ -1118,6 +1121,7 @@ TowerBox:AddButton({
             char = player.Character
             hrp  = char and char:FindFirstChild("HumanoidRootPart")
             if not hrp then
+                warn(("[ProjectEToH] run %d: character lost at step %d/%d, stopping"):format(rep, i, #resolvedSteps))
                 Library:Notify({ Title = "Auto Play", Description = "Character lost, stopping!", Duration = 3 })
                 isAutoPlaying = false
                 return
@@ -1186,6 +1190,7 @@ TowerBox:AddButton({
                 if touchConn then touchConn:Disconnect() end
             end
         end
+        warn(("[ProjectEToH] run %d/%d finished (died=%s)"):format(rep, repeatCount, tostring(died)))
         if not died then
             Library:Notify({ Title = "Auto Play", Description = "Complete!" .. repTag, Duration = 3 })
         end
