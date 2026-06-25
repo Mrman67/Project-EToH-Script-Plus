@@ -1413,24 +1413,46 @@ PlayerBox:AddToggle("Noclip", {
         -- Tear down any previous noclip hooks.
         if _G.noclipConns then
             for _, c in ipairs(_G.noclipConns) do c:Disconnect() end
-            _G.noclipConns = nil
         end
+        _G.noclipConns = {}
         if noclipConnection then noclipConnection:Disconnect() noclipConnection = nil end
         if not state then return end
+        local conns = _G.noclipConns
 
-        -- Plain per-frame sweep: clear collision on every character part (including the
-        -- HumanoidRootPart) before each physics step. Do NOT hook CanCollide changes --
-        -- the game's AntiNoHeadCollision script reacts to those too, and the two fight
-        -- each other into an "event re-entrancy depth exceeded" explosion.
-        noclipConnection = RunService.Stepped:Connect(function()
+        local function forceUncollide(part)
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+        -- Disable collision on every character part, including the HumanoidRootPart,
+        -- and immediately revert it whenever the game re-enables it. Some areas (e.g.
+        -- Pit of Misery) re-assert floor collision every frame, which a once-per-frame
+        -- sweep can lose the race against; reacting to the property change wins it.
+        local function hookPart(part)
+            if not part:IsA("BasePart") then return end
+            forceUncollide(part)
+            conns[#conns + 1] = part:GetPropertyChangedSignal("CanCollide"):Connect(function()
+                if part.CanCollide then part.CanCollide = false end
+            end)
+        end
+        local function hookChar(char)
+            if not char then return end
+            for _, p in ipairs(char:GetDescendants()) do hookPart(p) end
+            conns[#conns + 1] = char.DescendantAdded:Connect(hookPart)
+        end
+
+        hookChar(Players.LocalPlayer.Character)
+        conns[#conns + 1] = Players.LocalPlayer.CharacterAdded:Connect(hookChar)
+
+        -- Per-frame sweep on both sides of the physics step, as a fallback for
+        -- anything the signal hooks miss.
+        local function sweep()
             local char = Players.LocalPlayer.Character
             if not char then return end
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") and part.CanCollide == true then
-                    part.CanCollide = false
-                end
-            end
-        end)
+            for _, p in ipairs(char:GetDescendants()) do forceUncollide(p) end
+        end
+        conns[#conns + 1] = RunService.Stepped:Connect(sweep)
+        conns[#conns + 1] = RunService.Heartbeat:Connect(sweep)
     end,
 }):AddKeyPicker("NoclipKeybind", {
     Text            = "Noclip Keybind",
