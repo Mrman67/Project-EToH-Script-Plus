@@ -24,6 +24,7 @@ return {
         --Ring 0
         { name = "TNF",  category = "Ring0", suggestedTime = { min = "0", sec = "5" } },
         { name = "ToG",  category = "Ring0", suggestedTime = { min = "3", sec = "0" } },
+        { name = "ToME",  category = "Ring0", suggestedTime = { min = "3", sec = "0" } },
         --Ring 1
         { name = "NEAT",  category = "Ring1", suggestedTime = { min = "0", sec = "5" } },
         { name = "ToAST", category = "Ring1", suggestedTime = { min = "3", sec = "0" } },
