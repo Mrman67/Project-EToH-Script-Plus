@@ -1890,6 +1890,30 @@ CreditsGroup:AddLabel('<font color="rgb(255,210,70)">[Mr.man]</font>  Owner', tr
 CreditsGroup:AddLabel('<font color="rgb(90,200,255)">[MaybeIsRealZack]</font>  Original Creator', true)
 CreditsGroup:AddLabel('<font color="rgb(120,230,120)">[canadianeditz]</font>  Contributor', true)
 
+local OtherScriptsGroup = Tabs.UISettings:AddRightGroupbox("Other Scripts")
+local function copyLoadstring(name, code)
+    local ok = pcall(setclipboard, code)
+    Library:Notify({
+        Title       = "Other Scripts",
+        Description  = ok and ("Copied " .. name .. " loadstring to clipboard") or "setclipboard isn't supported by your executor",
+        Duration    = 4,
+    })
+end
+OtherScriptsGroup:AddButton({
+    Text     = "Original Script",
+    Tooltip  = "Original script of this project. Click to copy its loadstring.",
+    Callback = function()
+        copyLoadstring("Original Script", 'loadstring(game:HttpGet("https://raw.githubusercontent.com/MaybeIsRealZack/Project-EToH-Script/refs/heads/main/Loader.lua"))()')
+    end,
+})
+OtherScriptsGroup:AddButton({
+    Text     = "SC Script",
+    Tooltip  = "Focuses on SC towers. Click to copy its loadstring.",
+    Callback = function()
+        copyLoadstring("SC Script", 'loadstring(game:HttpGet("https://raw.githubusercontent.com/cslp1/Project-SC-Script/refs/heads/main/SC%20Script.lua"))()')
+    end,
+})
+
 
 ThemeManager:SetLibrary(Library)
 SaveManager:SetLibrary(Library)
