@@ -73,6 +73,7 @@ local Tabs = {
 local Options  = Library.Options
 local isAutoPlaying = false
 local currentResolvedSteps = nil
+local startAutoPlay -- forward declaration (assigned where the Auto Play button is built)
 
 local baseRepo = "https://raw.githubusercontent.com/Mrman67/Project-EToH-Script-Plus/refs/heads/main/Games/EToH/"
 local registryUrl = "https://raw.githubusercontent.com/Mrman67/Project-EToH-Script-Plus/refs/heads/main/Games/EToH/TowerRegistry.lua"
@@ -471,107 +472,107 @@ TowerBox:AddToggle("AutoReturnToLobby", {
     end,
 })
 
+-- Suggested seconds for a single tower.
+local function towerSuggestedSec(name)
+    local t = SuggestedTimes[name]
+    return t and ((tonumber(t.min) or 0) * 60 + (tonumber(t.sec) or 0)) or 0
+end
+-- Towers ticked in the Auto Complete dropdown, in list order.
+local function getSelectedTowers()
+    local picked = Library.Options.ACTowers and Library.Options.ACTowers.Value or {}
+    local list = {}
+    for _, name in ipairs(DropdownValues) do
+        if picked[name] then list[#list + 1] = name end
+    end
+    return list
+end
+local ACSuggestedLabel
+local function updateACTime()
+    if not ACSuggestedLabel then return end
+    local total = 0
+    for _, name in ipairs(getSelectedTowers()) do total = total + towerSuggestedSec(name) end
+    ACSuggestedLabel:SetText(("Selected total suggested: %d:%02d"):format(math.floor(total / 60), total % 60))
+end
+
+TowerBox:AddDropdown("ACTowers", {
+    Text     = "Auto Complete: Towers",
+    Values   = DropdownValues,
+    Multi    = true,
+    Default  = {},
+    Tooltip  = "Tick which towers Auto Complete Selected plays (in list order).",
+    Callback = function() updateACTime() end,
+})
+ACSuggestedLabel = TowerBox:AddLabel("Selected total suggested: 0:00")
+updateACTime()
+
 TowerBox:AddToggle("LoopAutoCompleteAllTowers", {
-    Text    = "Auto Complete All Towers",
+    Text    = "Auto Complete Selected Towers",
     Default = false,
-    Tooltip = "Continuously auto-complete all towers in current region (requires Return to Lobby enabled)",
+    Tooltip = "Auto Play each ticked tower in order, returning to the lobby between each (wait 5s, touch RestartBrick, wait 5s). Time works like Repeat: with Use Suggested Time on, each tower uses its own suggested time (total = the sum shown); otherwise the custom Completion Time is the total, split across towers by suggested length.",
     Callback = function(state)
-        local returnToLobbyToggle = Library.Toggles.AutoReturnToLobby
-        local player = game:GetService("Players").LocalPlayer
-        
-        if state then
-            _G.returnToLobbyOriginalState = returnToLobbyToggle.Value
-            returnToLobbyToggle:SetValue(true)
-            returnToLobbyToggle:SetDisabled(true)
-            
-            _G.autoCompleteAllTowersActive = true
-            
-            Library:Notify({ Title = "Auto Complete All Towers", Description = "Return to Lobby enabled and locked!", Duration = 3 })
-            
-            task.spawn(function()
-                while _G.autoCompleteAllTowersActive do
-                    local towerList = DropdownValues
-                    
-                    if not towerList or #towerList == 0 then
-                        Library:Notify({ Title = "Auto Complete All Towers", Description = "No towers found!", Duration = 3 })
-                        break
-                    end
-                    
-                    for towerIndex, towerName in ipairs(towerList) do
-                        if not _G.autoCompleteAllTowersActive then break end
-                        
-                        Library.Options.TowerSelect:SetValue(towerName)
-                        Library:Notify({ Title = "Auto Complete All Towers", Description = "(" .. towerIndex .. "/" .. #towerList .. ") Preparing: " .. towerName, Duration = 2 })
-                        task.wait(1)
-                        
-                        local startTeam = game:GetService("Teams"):FindFirstChild("Start")
-                        local originalTeam = player.Team
-                        
-                        Library:Notify({ Title = "Auto Complete All Towers", Description = "(" .. towerIndex .. "/" .. #towerList .. ") Waiting for Auto Play... Press the button!", Duration = 5 })
-                        
-                        local maxWaitTime = 120
-                        local waitStart = os.clock()
-                        local enteredTower = false
-                        
-                        while _G.autoCompleteAllTowersActive and os.clock() - waitStart < maxWaitTime do
-                            if player.Team ~= originalTeam and player.Team ~= startTeam then
-                                enteredTower = true
-                                Library:Notify({ Title = "Auto Complete All Towers", Description = "(" .. towerIndex .. "/" .. #towerList .. ") Entered tower! Playing...", Duration = 2 })
-                                break
-                            end
-                            task.wait(0.5)
-                        end
-                        
-                        if not enteredTower then
-                            if os.clock() - waitStart >= maxWaitTime then
-                                Library:Notify({ Title = "Auto Complete All Towers", Description = "Timeout waiting for Auto Play! Stopping.", Duration = 5 })
-                            end
-                            _G.autoCompleteAllTowersActive = false
-                            break
-                        end
-                        
-                        waitStart = os.clock()
-                        maxWaitTime = 600
-                        
-                        while _G.autoCompleteAllTowersActive and os.clock() - waitStart < maxWaitTime do
-                            if player.Team == startTeam then
-                                Library:Notify({ Title = "Auto Complete All Towers", Description = "(" .. towerIndex .. "/" .. #towerList .. ") " .. towerName .. " completed! Ready for next tower.", Duration = 2 })
-                                task.wait(1)
-                                break
-                            end
-                            task.wait(1)
-                        end
-                        
-                        if os.clock() - waitStart >= maxWaitTime then
-                            Library:Notify({ Title = "Auto Complete All Towers", Description = "Timeout waiting for lobby! Stopping.", Duration = 5 })
-                            _G.autoCompleteAllTowersActive = false
-                            break
-                        end
-                    end
-                    
-                    if _G.autoCompleteAllTowersActive then
-                        Library:Notify({ Title = "Auto Complete All Towers", Description = "Cycle completed! Restarting...", Duration = 3 })
-                        task.wait(3)
-                    end
-                end
-            end)
-            
-            Library:Notify({ Title = "Auto Complete All Towers", Description = "Started! Press Auto Play to begin each tower.", Duration = 3 })
-        else
-            _G.autoCompleteAllTowersActive = false
-            
-            local originalState = _G.returnToLobbyOriginalState or false
-            returnToLobbyToggle:SetDisabled(false)
-            returnToLobbyToggle:SetValue(originalState)
-            
-            Library:Notify({ Title = "Auto Complete All Towers", Description = "Stopped! Return to Lobby restored.", Duration = 2 })
+        if not state then
+            _G.autoCompleteActive = false
+            return
         end
+        _G.autoCompleteActive = true
+        task.spawn(function()
+            local towers = getSelectedTowers()
+            if #towers == 0 then
+                Library:Notify({ Title = "Auto Complete", Description = "No towers selected!", Duration = 4 })
+                _G.autoCompleteActive = false
+                Library.Toggles.LoopAutoCompleteAllTowers:SetValue(false)
+                return
+            end
+
+            -- Time, same idea as Repeat: a total budget shared across the towers.
+            local useSuggested = Library.Toggles.UseSuggestedTime.Value
+            local sumSuggested = 0
+            for _, name in ipairs(towers) do sumSuggested = sumSuggested + towerSuggestedSec(name) end
+            local customTotal = (tonumber(Library.Options.CompletionMin.Value) or 0) * 60
+                              + (tonumber(Library.Options.CompletionSec.Value) or 0)
+
+            -- Save the UI fields we drive, then restore them at the end.
+            local origTower  = Library.Options.TowerSelect.Value
+            local origMin    = Library.Options.CompletionMin.Value
+            local origSec    = Library.Options.CompletionSec.Value
+            local origRepeat = Library.Options.RepeatCount.Value
+            Library.Options.RepeatCount:SetValue("1") -- one run per tower
+
+            for i, name in ipairs(towers) do
+                if not _G.autoCompleteActive then break end
+                if i > 1 then
+                    Library:Notify({ Title = "Auto Complete", Description = ("(%d/%d) Returning to lobby..."):format(i, #towers), Duration = 4 })
+                    returnToLobby()
+                end
+                if not _G.autoCompleteActive then break end
+                Library:Notify({ Title = "Auto Complete", Description = ("(%d/%d) Playing %s"):format(i, #towers, name), Duration = 3 })
+                -- Selecting the tower also sets its suggested time when Use Suggested Time is on.
+                Library.Options.TowerSelect:SetValue(name)
+                if not useSuggested then
+                    local share = sumSuggested > 0 and (customTotal * (towerSuggestedSec(name) / sumSuggested)) or customTotal
+                    share = math.max(share, 1)
+                    Library.Options.CompletionMin:SetValue(tostring(math.floor(share / 60)))
+                    Library.Options.CompletionSec:SetValue(tostring(math.floor(share % 60)))
+                end
+                startAutoPlay() -- yields until this tower's run finishes
+            end
+
+            -- Restore the UI fields.
+            Library.Options.TowerSelect:SetValue(origTower)
+            Library.Options.CompletionMin:SetValue(origMin)
+            Library.Options.CompletionSec:SetValue(origSec)
+            Library.Options.RepeatCount:SetValue(origRepeat)
+
+            if _G.autoCompleteActive then
+                Library:Notify({ Title = "Auto Complete", Description = "Done -- all selected towers played!", Duration = 5 })
+            end
+            _G.autoCompleteActive = false
+            Library.Toggles.LoopAutoCompleteAllTowers:SetValue(false)
+        end)
     end,
 })
 
-TowerBox:AddButton({
-    Text     = "Auto Play",
-    Callback = function()
+startAutoPlay = function()
         if isAutoPlaying then
             Library:Notify({ Title = "Auto Play", Description = "Already running!", Duration = 3 })
             return
@@ -1236,8 +1237,8 @@ TowerBox:AddButton({
         stopAutoNoclip()
         isAutoPlaying = false
         currentResolvedSteps = nil
-    end,
-})
+end
+TowerBox:AddButton({ Text = "Auto Play", Callback = startAutoPlay })
 local allJumpCheckpoints = {}
 local allJumpVisuals = {}
 
