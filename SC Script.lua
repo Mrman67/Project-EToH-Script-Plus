@@ -606,6 +606,33 @@ startAutoPlay = function()
             local h = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
             if h and h.Sit then h.Sit = false end
         end)
+        -- Anti-stuck: while walking the route, if the character hasn't moved ~4 studs in
+        -- 5s (e.g. caught on a vine or zipline that needs a jump to release), jump to free
+        -- it. Runs in parallel with the walk and only acts while `walking` is true.
+        local walking = false
+        task.spawn(function()
+            local lastPos, lastMove
+            while isAutoPlaying do
+                task.wait(0.25)
+                if not walking then lastPos = nil continue end
+                local c = player.Character
+                local h = c and c:FindFirstChild("HumanoidRootPart")
+                if not h then continue end
+                if not lastPos or (h.Position - lastPos).Magnitude > 4 then
+                    lastPos  = h.Position
+                    lastMove = os.clock()
+                elseif os.clock() - lastMove >= 5 then
+                    local hum = c:FindFirstChildOfClass("Humanoid")
+                    if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+                    local VIM = game:GetService("VirtualInputManager")
+                    VIM:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+                    task.wait(0.1)
+                    VIM:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+                    lastMove = os.clock()
+                    lastPos  = h.Position
+                end
+            end
+        end)
         local died = false
         local stopReason = "died"
         local diedConn
@@ -1136,6 +1163,7 @@ startAutoPlay = function()
             end
             remainingDistances[i] = cumDist
         end
+        walking = true
         for i, step in ipairs(resolvedSteps) do
             if checkDied() then return end
             char = player.Character
@@ -1211,6 +1239,7 @@ startAutoPlay = function()
                 if touchConn then touchConn:Disconnect() end
             end
         end
+        walking = false
         warn(("[ProjectEToH] run %d/%d finished (died=%s)"):format(rep, repeatCount, tostring(died)))
         if not died then
             Library:Notify({ Title = "Auto Play", Description = "Complete!" .. repTag, Duration = 3 })
