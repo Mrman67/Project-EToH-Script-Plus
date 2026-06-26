@@ -399,6 +399,49 @@ ShowRouteToggle:AddColorPicker("RouteColor", {
         end
     end,
 })
+-- The RestartBrick: touching it sends you back to the lobby (it has a TouchInterest).
+-- It must be TOUCHED, not just teleported near -- that's why the old "set CFrame above
+-- it" approach never returned you.
+local function getLobbyReturnPart()
+    local misc = workspace:FindFirstChild("Misc")
+    local part = misc and misc:FindFirstChild("RestartBrick")
+    if part then return part end
+    return workspace:FindFirstChild("RestartBrick", true)
+end
+
+-- After a win: wait 5s, fire the RestartBrick's touch to return to the lobby, then wait
+-- another 5s. Shared by the Return to Lobby toggle and Auto Play repeats. Never re-enters.
+local function returnToLobby()
+    local player = game:GetService("Players").LocalPlayer
+    task.wait(5)
+    local part = getLobbyReturnPart()
+    local char = player.Character
+    local hrp  = char and char:FindFirstChild("HumanoidRootPart")
+    if part and hrp then
+        hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+        if firetouchinterest then
+            -- Directly fire the touch a few times so the return reliably registers.
+            for _ = 1, 3 do
+                pcall(function()
+                    firetouchinterest(part, hrp, 0)
+                    firetouchinterest(part, hrp, 1)
+                end)
+                task.wait(0.1)
+            end
+        else
+            -- No firetouchinterest: physically overlap the part so a real touch fires.
+            local stop = os.clock() + 1
+            repeat
+                char = player.Character
+                hrp  = char and char:FindFirstChild("HumanoidRootPart")
+                if hrp then hrp.CFrame = part.CFrame end
+                task.wait(0.1)
+            until os.clock() >= stop
+        end
+    end
+    task.wait(5)
+end
+
 TowerBox:AddToggle("AutoReturnToLobby", {
     Text    = "Return to Lobby",
     Default = false,
@@ -416,15 +459,7 @@ TowerBox:AddToggle("AutoReturnToLobby", {
             _G.returnToLobbyConn = player:GetPropertyChangedSignal("Team"):Connect(function()
                 local winnerTeam = game:GetService("Teams"):FindFirstChild("Winner!")
                 if player.Team == winnerTeam then
-                    task.wait(1)
-                    local restartBrick = workspace:FindFirstChild("Misc") and workspace.Misc:FindFirstChild("RestartBrick")
-                    if restartBrick then
-                        local char = player.Character
-                        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                        if hrp then
-                            hrp.CFrame = restartBrick.CFrame + Vector3.new(0, 3, 0)
-                        end
-                    end
+                    returnToLobby()
                 end
             end)
         else
@@ -956,23 +991,15 @@ TowerBox:AddButton({
         local repTag = repeatCount > 1 and (" [" .. rep .. "/" .. repeatCount .. "]") or ""
         warn(("[ProjectEToH] Auto Play run %d/%d (%s) budget=%.1fs"):format(rep, repeatCount, tostring(selected), perRepeatTime))
         if rep > 1 then
-            -- Completing a tower sends us back to the lobby, which respawns the character.
-            -- Wait for that respawn to finish (so it can't interrupt the next run mid-route),
-            -- let it settle, then re-apply the autoplay movement setup on the fresh
-            -- character -- the same state the first run starts in.
-            Library:Notify({ Title = "Auto Play", Description = "Waiting for respawn before next run..." .. repTag, Duration = 4 })
-            local respawned = false
-            local caConn = player.CharacterAdded:Connect(function() respawned = true end)
-            local t0 = os.clock()
-            while not respawned and os.clock() - t0 < 15 do
-                -- Ignore the win/respawn death here; only stop if the user actually exits.
-                if died and stopReason == "exited" then caConn:Disconnect() checkDied() return end
-                task.wait(0.2)
-            end
-            caConn:Disconnect()
+            -- After the previous win, return to the lobby (5s wait, tp onto the return
+            -- part, 5s wait), then re-enter the tower for the next run.
+            Library:Notify({ Title = "Auto Play", Description = "Returning to lobby before next run..." .. repTag, Duration = 4 })
+            returnToLobby()
+            if died and stopReason == "exited" then checkDied() return end
+            -- Returning respawns us at the lobby; refresh the character and re-apply setup.
             char = player.Character or player.CharacterAdded:Wait()
             char:WaitForChild("HumanoidRootPart", 10)
-            task.wait(1)
+            task.wait(0.5)
             char = player.Character
             hrp  = char and char:FindFirstChild("HumanoidRootPart")
             if not hrp then
@@ -996,7 +1023,7 @@ TowerBox:AddButton({
                 stopReason = "died"
                 diedConn:Disconnect()
             end)
-            warn(("[ProjectEToH] run %d: respawn wait done (respawned=%s, hrp=%s)"):format(rep, tostring(respawned), tostring(hrp ~= nil)))
+            warn(("[ProjectEToH] run %d: returned to lobby, re-entering"):format(rep))
         end
         -- Each run is a full Auto Play pass -- go to the teleporter, enter the tower, and
         -- walk the route -- the same as pressing Auto Play again after a completion.
