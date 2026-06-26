@@ -524,13 +524,9 @@ TowerBox:AddToggle("LoopAutoCompleteAllTowers", {
                 return
             end
 
-            -- Time, same idea as Repeat: a total budget shared across the towers.
-            local useSuggested = Library.Toggles.UseSuggestedTime.Value
-            local sumSuggested = 0
-            for _, name in ipairs(towers) do sumSuggested = sumSuggested + towerSuggestedSec(name) end
-            local customTotal = (tonumber(Library.Options.CompletionMin.Value) or 0) * 60
-                              + (tonumber(Library.Options.CompletionSec.Value) or 0)
-
+            -- Each tower is played for its own completion time: its suggested time when
+            -- Use Suggested Time is on, otherwise the custom Completion Time applied per
+            -- tower (the time is never split across towers).
             -- Save the UI fields we drive, then restore them at the end.
             local origTower  = Library.Options.TowerSelect.Value
             local origMin    = Library.Options.CompletionMin.Value
@@ -546,14 +542,9 @@ TowerBox:AddToggle("LoopAutoCompleteAllTowers", {
                 end
                 if not _G.autoCompleteActive then break end
                 Library:Notify({ Title = "Auto Complete", Description = ("(%d/%d) Playing %s"):format(i, #towers, name), Duration = 3 })
-                -- Selecting the tower also sets its suggested time when Use Suggested Time is on.
+                -- Selecting the tower sets its suggested time when Use Suggested Time is on;
+                -- otherwise the custom Completion Time is left as-is for every tower.
                 Library.Options.TowerSelect:SetValue(name)
-                if not useSuggested then
-                    local share = sumSuggested > 0 and (customTotal * (towerSuggestedSec(name) / sumSuggested)) or customTotal
-                    share = math.max(share, 1)
-                    Library.Options.CompletionMin:SetValue(tostring(math.floor(share / 60)))
-                    Library.Options.CompletionSec:SetValue(tostring(math.floor(share % 60)))
-                end
                 startAutoPlay() -- yields until this tower's run finishes
             end
 
@@ -983,10 +974,11 @@ startAutoPlay = function()
         end
 
         local repeatCount = math.max(math.floor(tonumber(Library.Options.RepeatCount.Value) or 1), 1)
-        local totalReqMin = tonumber(Library.Options.CompletionMin.Value) or 0
-        local totalReqSec = tonumber(Library.Options.CompletionSec.Value) or 0
-        -- Completion Time is the TOTAL across all repeats, so each run gets an even share.
-        local perRepeatTime = math.max((totalReqMin * 60 + totalReqSec) / repeatCount, 1)
+        local reqSec = (tonumber(Library.Options.CompletionMin.Value) or 0) * 60
+                     + (tonumber(Library.Options.CompletionSec.Value) or 0)
+        -- The completion time is the time for EACH run (suggested or custom), never a
+        -- total that gets split across repeats.
+        local perRepeatTime = math.max(reqSec, 1)
 
         for rep = 1, repeatCount do
         local repTag = repeatCount > 1 and (" [" .. rep .. "/" .. repeatCount .. "]") or ""
