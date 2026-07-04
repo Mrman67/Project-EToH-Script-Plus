@@ -478,11 +478,15 @@ local function towerSuggestedSec(name)
     local t = SuggestedTimes[name]
     return t and ((tonumber(t.min) or 0) * 60 + (tonumber(t.sec) or 0)) or 0
 end
+-- The tower names shown in the Auto Complete dropdown: the registry towers, plus any
+-- added at runtime by Auto Detect Towers.
+local acValues = {}
+for _, name in ipairs(DropdownValues) do acValues[#acValues + 1] = name end
 -- Towers ticked in the Auto Complete dropdown, in list order.
 local function getSelectedTowers()
     local picked = Library.Options.ACTowers and Library.Options.ACTowers.Value or {}
     local list = {}
-    for _, name in ipairs(DropdownValues) do
+    for _, name in ipairs(acValues) do
         if picked[name] then list[#list + 1] = name end
     end
     return list
@@ -497,7 +501,7 @@ end
 
 TowerBox:AddDropdown("ACTowers", {
     Text     = "Auto Complete: Towers",
-    Values   = DropdownValues,
+    Values   = acValues,
     Multi    = true,
     Default  = {},
     Tooltip  = "Tick which towers Auto Complete Selected plays (in list order).",
@@ -645,21 +649,25 @@ PersonalBox:AddButton({
 
 PersonalBox:AddButton({
     Text    = "Auto Detect Towers",
-    Tooltip = "Detect every tower loaded in the current area (including ones not in the registry) and run the VM flow on all of them -- for clearing a whole area with boost items. Press again to stop.",
+    Tooltip = "Detect every tower loaded in the current area (including ones not in the registry) and add them to the 'Auto Complete: Towers' list, so you can tick them and run Auto Use VM on them.",
     Callback = function()
-        if _G.vmActive then
-            _G.vmActive = false
-            Library:Notify({ Title = "Auto VM", Description = "Stopping...", Duration = 3 })
+        local towersFolder = workspace:FindFirstChild("Towers")
+        if not towersFolder then
+            Library:Notify({ Title = "Auto Detect", Description = "No towers found in this area!", Duration = 4 })
             return
         end
-        local towersFolder = workspace:FindFirstChild("Towers")
-        local names = {}
-        if towersFolder then
-            for _, t in ipairs(towersFolder:GetChildren()) do names[#names + 1] = t.Name end
+        local existing = {}
+        for _, name in ipairs(acValues) do existing[name] = true end
+        local added = 0
+        for _, t in ipairs(towersFolder:GetChildren()) do
+            if not existing[t.Name] then
+                acValues[#acValues + 1] = t.Name
+                existing[t.Name] = true
+                added = added + 1
+            end
         end
-        Library:Notify({ Title = "Auto VM", Description = ("Detected %d towers"):format(#names), Duration = 4 })
-        _G.vmActive = true
-        task.spawn(function() runVMFlow(names) end)
+        Library.Options.ACTowers:SetValues(acValues)
+        Library:Notify({ Title = "Auto Detect", Description = ("Added %d new tower(s); %d in the list"):format(added, #acValues), Duration = 5 })
     end,
 })
 
