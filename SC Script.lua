@@ -608,8 +608,10 @@ local function runVMFlow(towerNames)
             task.wait(0.1)
             VIM:SendKeyEvent(false, Enum.KeyCode.Five, false, game)
 
-            -- Wait 30s for the VM to take effect.
-            local waitUntil = os.clock() + 30
+            -- Wait a random 30-75s for the VM to take effect (varies per tower).
+            local waitSec = math.random(30, 75)
+            Library:Notify({ Title = "Auto VM", Description = ("(%d/%d) %s -- waiting %ds"):format(i, #towerNames, name, waitSec), Duration = 4 })
+            local waitUntil = os.clock() + waitSec
             while os.clock() < waitUntil and _G.vmActive do task.wait(0.5) end
 
             -- Teleport to the WinPad to complete the tower.
