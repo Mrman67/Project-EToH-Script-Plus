@@ -562,6 +562,105 @@ TowerBox:AddButton({
     end,
 })
 
+-- ===== Personal Features (built specifically for gavin) =====
+local PersonalBox = Tabs.Main:AddLeftGroupbox("Personal Features")
+
+-- For each tower: enter via its teleporter, use the VM item (key 5 -> slot 5), wait 30s,
+-- then teleport to its WinPad to complete it. A boost-item way to clear towers, including
+-- ones that aren't in the registry. Returns to the lobby between towers.
+local function runVMFlow(towerNames)
+    local player = game:GetService("Players").LocalPlayer
+    local VIM    = game:GetService("VirtualInputManager")
+    local towersFolder = workspace:FindFirstChild("Towers")
+    if not towersFolder or #towerNames == 0 then
+        Library:Notify({ Title = "Auto VM", Description = "No towers to run!", Duration = 4 })
+        _G.vmActive = false
+        return
+    end
+    for i, name in ipairs(towerNames) do
+        if not _G.vmActive then break end
+        local tower = towersFolder:FindFirstChild(name)
+        if tower then
+            if i > 1 then returnToLobby() end
+            if not _G.vmActive then break end
+            Library:Notify({ Title = "Auto VM", Description = ("(%d/%d) %s"):format(i, #towerNames, name), Duration = 3 })
+
+            -- Enter the tower via its teleporter (TPFRAME then TeleportTo).
+            local tp = tower:FindFirstChild("Teleporter")
+            local entryParts = {}
+            if tp and tp:FindFirstChild("Teleporter") and tp.Teleporter:FindFirstChild("TPFRAME") then
+                entryParts[#entryParts + 1] = tp.Teleporter.TPFRAME
+            end
+            if tp and tp:FindFirstChild("TeleportTo") then
+                entryParts[#entryParts + 1] = tp.TeleportTo
+            end
+            for _, part in ipairs(entryParts) do
+                local t0 = os.clock()
+                repeat
+                    local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0) end
+                    task.wait(0.1)
+                until os.clock() - t0 > 1.5 or not _G.vmActive
+            end
+
+            -- Use the VM item (slot 5).
+            VIM:SendKeyEvent(true, Enum.KeyCode.Five, false, game)
+            task.wait(0.1)
+            VIM:SendKeyEvent(false, Enum.KeyCode.Five, false, game)
+
+            -- Wait 30s for the VM to take effect.
+            local waitUntil = os.clock() + 30
+            while os.clock() < waitUntil and _G.vmActive do task.wait(0.5) end
+
+            -- Teleport to the WinPad to complete the tower.
+            local winpad = tower:FindFirstChild("WinPad")
+            if winpad then
+                local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then hrp.CFrame = winpad.CFrame + Vector3.new(0, 3, 0) end
+                task.wait(1.5)
+            end
+        end
+    end
+    if _G.vmActive then
+        Library:Notify({ Title = "Auto VM", Description = "Done!", Duration = 5 })
+    end
+    _G.vmActive = false
+end
+
+PersonalBox:AddButton({
+    Text    = "Auto Use VM (selected)",
+    Tooltip = "For each ticked tower in 'Auto Complete: Towers': enter it, use the VM item (key 5), wait 30s, then teleport to the WinPad. Press again to stop.",
+    Callback = function()
+        if _G.vmActive then
+            _G.vmActive = false
+            Library:Notify({ Title = "Auto VM", Description = "Stopping...", Duration = 3 })
+            return
+        end
+        _G.vmActive = true
+        task.spawn(function() runVMFlow(getSelectedTowers()) end)
+    end,
+})
+
+PersonalBox:AddButton({
+    Text    = "Auto Detect Towers",
+    Tooltip = "Detect every tower loaded in the current area (including ones not in the registry) and run the VM flow on all of them -- for clearing a whole area with boost items. Press again to stop.",
+    Callback = function()
+        if _G.vmActive then
+            _G.vmActive = false
+            Library:Notify({ Title = "Auto VM", Description = "Stopping...", Duration = 3 })
+            return
+        end
+        local towersFolder = workspace:FindFirstChild("Towers")
+        local names = {}
+        if towersFolder then
+            for _, t in ipairs(towersFolder:GetChildren()) do names[#names + 1] = t.Name end
+        end
+        Library:Notify({ Title = "Auto VM", Description = ("Detected %d towers"):format(#names), Duration = 4 })
+        _G.vmActive = true
+        task.spawn(function() runVMFlow(names) end)
+    end,
+})
+
 startAutoPlay = function()
         if isAutoPlaying then
             Library:Notify({ Title = "Auto Play", Description = "Already running!", Duration = 3 })
