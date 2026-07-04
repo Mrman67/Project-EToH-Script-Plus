@@ -653,21 +653,31 @@ PersonalBox:AddButton({
     Callback = function()
         local towersFolder = workspace:FindFirstChild("Towers")
         if not towersFolder then
-            Library:Notify({ Title = "Auto Detect", Description = "No towers found in this area!", Duration = 4 })
+            warn("[Auto Detect] workspace.Towers not found")
+            Library:Notify({ Title = "Auto Detect", Description = "workspace.Towers not found in this area!", Duration = 5 })
             return
         end
+        local children = towersFolder:GetChildren()
         local existing = {}
         for _, name in ipairs(acValues) do existing[name] = true end
-        local added = 0
-        for _, t in ipairs(towersFolder:GetChildren()) do
+        local added, newNames = 0, {}
+        for _, t in ipairs(children) do
             if not existing[t.Name] then
                 acValues[#acValues + 1] = t.Name
                 existing[t.Name] = true
                 added = added + 1
+                newNames[#newNames + 1] = t.Name
             end
         end
-        Library.Options.ACTowers:SetValues(acValues)
-        Library:Notify({ Title = "Auto Detect", Description = ("Added %d new tower(s); %d in the list"):format(added, #acValues), Duration = 5 })
+        warn(("[Auto Detect] workspace.Towers has %d children; %d new: %s")
+            :format(#children, added, table.concat(newNames, ", ")))
+        local ok, err = pcall(function() Library.Options.ACTowers:SetValues(acValues) end)
+        if not ok then
+            warn("[Auto Detect] SetValues failed: " .. tostring(err))
+            Library:Notify({ Title = "Auto Detect", Description = ("Found %d towers but list refresh failed (see F9)"):format(#children), Duration = 6 })
+            return
+        end
+        Library:Notify({ Title = "Auto Detect", Description = ("%d towers here, %d new added (%d in list)"):format(#children, added, #acValues), Duration = 6 })
     end,
 })
 
