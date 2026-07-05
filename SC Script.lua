@@ -69,8 +69,57 @@ local isDev = game:GetService("Players").LocalPlayer.Name == "MaybeIsRealZack"
 local Tabs = {
     Main       = Window:AddTab("Main",        "zap"),
     UISettings = Window:AddTab("UI Settings", "settings"),
+    Logs       = Window:AddTab("Logs",        "list"),
 }
 local Options  = Library.Options
+
+-- ===== Action Log (Logs tab) =====
+-- A rolling, newest-first log of everything the script does. logAction() is the sink;
+-- most actions reach it automatically via the Library:Notify wrap below, and every
+-- toggle flip is hooked at the end of the script.
+local logLines      = {}
+local MAX_LOG_LINES = 25
+local LogBox        = Tabs.Logs:AddLeftGroupbox("Action Log")
+local LogLabel      = LogBox:AddLabel({ Text = "(no actions yet)", DoesWrap = true })
+
+local function logAction(msg)
+    logLines[#logLines + 1] = ("[%s] %s"):format(os.date("%X"), tostring(msg))
+    while #logLines > MAX_LOG_LINES do table.remove(logLines, 1) end
+    local ordered = {}
+    for i = #logLines, 1, -1 do ordered[#ordered + 1] = logLines[i] end
+    LogLabel:SetText(table.concat(ordered, "\n"))
+end
+_G.logAction = logAction
+
+LogBox:AddButton({
+    Text     = "Clear Logs",
+    Callback = function()
+        table.clear(logLines)
+        LogLabel:SetText("(no actions yet)")
+    end,
+})
+
+-- Mirror every notification into the log -- covers virtually every in-script action,
+-- since they all notify. Wrapped once, here, before any action can fire.
+do
+    local rawNotify = Library.Notify
+    Library.Notify = function(self, ...)
+        local first = select(1, ...)
+        local line
+        if typeof(first) == "table" then
+            local title, desc = first.Title, first.Description
+            if title and title ~= "" and tostring(title) ~= "nil" then
+                line = tostring(title) .. ": " .. tostring(desc)
+            else
+                line = tostring(desc)
+            end
+        else
+            line = tostring(first)
+        end
+        pcall(logAction, line)
+        return rawNotify(self, ...)
+    end
+end
 local isAutoPlaying = false
 local currentResolvedSteps = nil
 local startAutoPlay -- forward declaration (assigned where the Auto Play button is built)
@@ -2191,4 +2240,17 @@ SaveManager:IgnoreThemeSettings()
 ThemeManager:ApplyToTab(Tabs.UISettings)
 SaveManager:BuildConfigSection(Tabs.UISettings)
 SaveManager:LoadAutoloadConfig()
+
+-- Log every toggle flip. Installed last -- after LoadAutoloadConfig -- so restoring a
+-- saved config on startup doesn't spam the log; only genuine flips after load are recorded.
+for idx, toggle in pairs(Library.Toggles) do
+    if type(toggle) == "table" and toggle.OnChanged then
+        toggle:OnChanged(function(value)
+            local label = (type(toggle.Text) == "string" and toggle.Text) or tostring(idx)
+            logAction(("Toggle: %s -> %s"):format(label, value and "ON" or "OFF"))
+        end)
+    end
+end
+logAction("Script loaded")
+
 _G.ProjectEToHLoaded = true
