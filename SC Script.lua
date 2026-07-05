@@ -1833,6 +1833,56 @@ PlayerBox:AddToggle("AntiAFK", {
         end
     end,
 })
+
+PlayerBox:AddToggle("Fullbright", {
+    Text    = "Fullbright",
+    Default = false,
+    Tooltip = "Removes darkness, fog and shadows so the whole level is fully lit",
+    Callback = function(state)
+        local Lighting   = game:GetService("Lighting")
+        local RunService = game:GetService("RunService")
+        if _G.FullbrightConn then
+            _G.FullbrightConn:Disconnect()
+            _G.FullbrightConn = nil
+        end
+        if state then
+            -- Snapshot the original lighting once so we can restore it later.
+            if not _G.FullbrightOriginal then
+                _G.FullbrightOriginal = {
+                    Brightness     = Lighting.Brightness,
+                    ClockTime      = Lighting.ClockTime,
+                    FogEnd         = Lighting.FogEnd,
+                    FogStart       = Lighting.FogStart,
+                    GlobalShadows  = Lighting.GlobalShadows,
+                    Ambient        = Lighting.Ambient,
+                    OutdoorAmbient = Lighting.OutdoorAmbient,
+                }
+            end
+            -- Re-assert every frame -- dark towers keep overwriting lighting per area.
+            _G.FullbrightConn = RunService.RenderStepped:Connect(function()
+                Lighting.Brightness     = 2
+                Lighting.ClockTime      = 12
+                Lighting.FogEnd         = 1e9
+                Lighting.FogStart       = 0
+                Lighting.GlobalShadows  = false
+                Lighting.Ambient        = Color3.fromRGB(255, 255, 255)
+                Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+            end)
+        else
+            local o = _G.FullbrightOriginal
+            if o then
+                Lighting.Brightness     = o.Brightness
+                Lighting.ClockTime      = o.ClockTime
+                Lighting.FogEnd         = o.FogEnd
+                Lighting.FogStart       = o.FogStart
+                Lighting.GlobalShadows  = o.GlobalShadows
+                Lighting.Ambient        = o.Ambient
+                Lighting.OutdoorAmbient = o.OutdoorAmbient
+                _G.FullbrightOriginal   = nil
+            end
+        end
+    end,
+})
 local godmodeOriginal = nil
 local godmodeV2Connection = nil
 local godmodeKillBrickConn = nil
