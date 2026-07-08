@@ -190,6 +190,45 @@ local function towerFolderPresent(name)
     return towersFolder ~= nil and towersFolder:FindFirstChild(name) ~= nil
 end
 
+local function towerFolder(name)
+    local towersFolder = workspace:FindFirstChild("Towers")
+    return towersFolder and towersFolder:FindFirstChild(name)
+end
+
+-- Resolve a tower's entry teleporter parts. Tries EToH's exact nesting first
+-- (Teleporter.Teleporter.TPFRAME / Teleporter.TeleportTo), then falls back to a recursive
+-- search by name so towers in other games using the same JToH kit (e.g. The Eternal Abyss)
+-- resolve even if the hierarchy differs. Returns nil if the folder/part is gone.
+local function resolveTPFrame(name)
+    local f = towerFolder(name)
+    if not f then return nil end
+    local tp    = f:FindFirstChild("Teleporter")
+    local inner = tp and tp:FindFirstChild("Teleporter")
+    local exact = inner and inner:FindFirstChild("TPFRAME")
+    return exact or f:FindFirstChild("TPFRAME", true)
+end
+local function resolveTeleportTo(name)
+    local f = towerFolder(name)
+    if not f then return nil end
+    local tp    = f:FindFirstChild("Teleporter")
+    local exact = tp and tp:FindFirstChild("TeleportTo")
+    return exact or f:FindFirstChild("TeleportTo", true)
+end
+
+-- F9 diagnostic: dump a tower folder's children when entry resolution fails, so an
+-- unexpected structure (a game that doesn't use the standard TPFRAME/TeleportTo names)
+-- can be identified in one shot.
+local function warnTowerStructure(name)
+    local f = towerFolder(name)
+    if not f then
+        warn(("[Auto Play] no folder named '%s' in workspace.Towers"):format(name))
+        return
+    end
+    local kids = {}
+    for _, c in ipairs(f:GetChildren()) do kids[#kids + 1] = c.Name end
+    warn(("[Auto Play] '%s' teleporter unresolved. Children: %s"):format(name, table.concat(kids, ", ")))
+end
+
 -- A place spec is one place id or a list of them; true if we're in one of them.
 local function placeMatches(ids)
     if type(ids) == "table" then
@@ -237,8 +276,8 @@ for _, tower in ipairs(Registry.Towers or {}) do
     if not shouldShow(tower, tpName) then continue end
     SuggestedTimes[n] = tower.suggestedTime
     TowerConfigs[n] = {
-        tpFrame    = function() return workspace.Towers[tpName].Teleporter.Teleporter.TPFRAME end,
-        teleportTo = function() return workspace.Towers[tpName].Teleporter.TeleportTo end,
+        tpFrame    = function() return resolveTPFrame(tpName) end,
+        teleportTo = function() return resolveTeleportTo(tpName) end,
         routeUrl   = baseRepo .. tower.category .. "/" .. n .. ".lua",
     }
     table.insert(DropdownValues, n)
@@ -695,15 +734,13 @@ local function runVMFlow(towerNames)
             if not _G.vmActive then break end
             Library:Notify({ Title = "Auto VM", Description = ("(%d/%d) %s"):format(i, #towerNames, name), Duration = 3 })
 
-            -- Enter the tower via its teleporter (TPFRAME then TeleportTo).
-            local tp = tower:FindFirstChild("Teleporter")
+            -- Enter the tower via its teleporter (TPFRAME then TeleportTo). Recursive search
+            -- by name so it works regardless of how the game nests them.
             local entryParts = {}
-            if tp and tp:FindFirstChild("Teleporter") and tp.Teleporter:FindFirstChild("TPFRAME") then
-                entryParts[#entryParts + 1] = tp.Teleporter.TPFRAME
-            end
-            if tp and tp:FindFirstChild("TeleportTo") then
-                entryParts[#entryParts + 1] = tp.TeleportTo
-            end
+            local tpFramePart = tower:FindFirstChild("TPFRAME", true)
+            local teleToPart  = tower:FindFirstChild("TeleportTo", true)
+            if tpFramePart then entryParts[#entryParts + 1] = tpFramePart end
+            if teleToPart  then entryParts[#entryParts + 1] = teleToPart end
             for _, part in ipairs(entryParts) do
                 local t0 = os.clock()
                 repeat
@@ -728,8 +765,8 @@ local function runVMFlow(towerNames)
             local waitUntil = os.clock() + waitSec
             while os.clock() < waitUntil and _G.vmActive do task.wait(0.5) end
 
-            -- Teleport to the WinPad to complete the tower.
-            local winpad = tower:FindFirstChild("WinPad")
+            -- Teleport to the WinPad to complete the tower (recursive: nesting may vary).
+            local winpad = tower:FindFirstChild("WinPad", true)
             if winpad then
                 local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
                 if hrp then hrp.CFrame = winpad.CFrame + Vector3.new(0, 3, 0) end
@@ -940,6 +977,7 @@ startAutoPlay = function()
             local VirtualInputManager = game:GetService("VirtualInputManager")
             local ok, tpFrame = pcall(config.tpFrame)
             if not ok or not tpFrame then
+                warnTowerStructure(getTpFrameName(selected))
                 Library:Notify({ Title = "Auto Play", Description = selected .. " teleporter not found!", Duration = 3 })
                 isAutoPlaying = false
                 stopAutoNoclip()
@@ -1292,6 +1330,7 @@ startAutoPlay = function()
         -- walk the route -- the same as pressing Auto Play again after a completion.
         local ok, tpFrame = pcall(config.tpFrame)
         if not ok or not tpFrame then
+            warnTowerStructure(getTpFrameName(selected))
             Library:Notify({ Title = "Auto Play", Description = selected .. " teleporter not found!", Duration = 3 })
             isAutoPlaying = false
             return
