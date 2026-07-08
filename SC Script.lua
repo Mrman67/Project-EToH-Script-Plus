@@ -212,10 +212,29 @@ local function entryMatchesPlace(entry)
     return placeMatches(Registry.Categories[entry.category])
 end
 
+-- Is the current place one the registry recognizes (its id appears in some category)?
+local placeIsKnown = false
+for _, ids in pairs(Registry.Categories or {}) do
+    if placeMatches(ids) then
+        placeIsKnown = true
+        break
+    end
+end
+
+-- Whether to list an entry here. In a KNOWN place we trust the registry's place mapping
+-- exactly. The folder-name fallback (show anything whose folder happens to be loaded) is
+-- only for UNKNOWN places -- e.g. EToH after a place-id update -- otherwise a different
+-- game that reuses EToH acronyms (The Eternal Abyss: ToSD/ToTF/ToER/...) would surface
+-- every colliding tower even though those aren't the real EToH towers.
+local function shouldShow(entry, folderName)
+    if entryMatchesPlace(entry) then return true end
+    return (not placeIsKnown) and towerFolderPresent(folderName)
+end
+
 for _, tower in ipairs(Registry.Towers or {}) do
     local n = tower.name
     local tpName = getTpFrameName(n)
-    if not entryMatchesPlace(tower) and not towerFolderPresent(tpName) then continue end
+    if not shouldShow(tower, tpName) then continue end
     SuggestedTimes[n] = tower.suggestedTime
     TowerConfigs[n] = {
         tpFrame    = function() return workspace.Towers[tpName].Teleporter.Teleporter.TPFRAME end,
@@ -227,7 +246,7 @@ end
 
 for _, tr in ipairs(Registry.TowerRush or {}) do
     local n = tr.name
-    if not entryMatchesPlace(tr) and not towerFolderPresent(n) then continue end
+    if not shouldShow(tr, n) then continue end
     SuggestedTimes[n] = tr.suggestedTime
     TowerConfigs[n] = {
         tpFrame = function()
