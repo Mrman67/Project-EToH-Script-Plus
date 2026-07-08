@@ -129,13 +129,23 @@ local baseRepo = "https://raw.githubusercontent.com/Mrman67/Project-EToH-Script-
 local registryUrl = "https://raw.githubusercontent.com/Mrman67/Project-EToH-Script-Plus/refs/heads/main/Games/EToH/TowerRegistry.lua"
 
 local Registry
-local ok_reg, reg_src = pcall(function() return game:HttpGet(registryUrl) end)
-if ok_reg and reg_src then
-    local fn = loadstring(reg_src)
-    if fn then
-        local ok2, result = pcall(fn)
-        if ok2 then Registry = result end
+local registryLoaded = false
+-- Retry the fetch: a single failed HttpGet (GitHub raw hiccup / rate limit) would
+-- otherwise drop us to the empty fallback registry -> "No towers found" with 0 towers.
+for attempt = 1, 4 do
+    local ok_reg, reg_src = pcall(function() return game:HttpGet(registryUrl) end)
+    if ok_reg and type(reg_src) == "string" and #reg_src > 0 then
+        local fn = loadstring(reg_src)
+        if fn then
+            local ok2, result = pcall(fn)
+            if ok2 and type(result) == "table" and type(result.Towers) == "table" then
+                Registry = result
+                registryLoaded = true
+                break
+            end
+        end
     end
+    if attempt < 4 then task.wait(0.75) end
 end
 if not Registry then
     Registry = {
@@ -240,10 +250,13 @@ end
 if #DropdownValues == 0 then
     local towersFolder = workspace:FindFirstChild("Towers")
     local loadedCount = towersFolder and #towersFolder:GetChildren() or 0
+    local reason = registryLoaded
+        and "The registry may be out of date for this game version."
+        or "Couldn't fetch the tower registry (network/HttpGet) -- try re-executing the script."
     Library:Notify({
         Title       = "Project EToH Script",
-        Description  = ("No towers found (PlaceId %s, registry towers: %d, loaded in workspace.Towers: %d). The registry may be out of date for this game version.")
-            :format(tostring(currentPlaceId), #(Registry.Towers or {}), loadedCount),
+        Description  = ("No towers found (PlaceId %s, registry towers: %d, loaded in workspace.Towers: %d). %s")
+            :format(tostring(currentPlaceId), #(Registry.Towers or {}), loadedCount, reason),
         Duration    = 10,
     })
 end
