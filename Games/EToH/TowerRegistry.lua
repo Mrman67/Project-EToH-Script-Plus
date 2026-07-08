@@ -14,7 +14,10 @@ local Categories = {
     Zone7 = 9071002677,
     Zone8 = 9071002915,
     Zone9 = 9071004505,
-    ["Pit-of-Misery"] = 15639952229,
+    -- A category may map to one place id or a list of them. Pit of Misery exists in the
+    -- original EToH place AND in "The Eternal Abyss" (15873244701) + its Pit of Misery
+    -- subplace (121814103864070) -- the same towers are present in all of them.
+    ["Pit-of-Misery"] = { 15639952229, 15873244701, 121814103864070 },
     ["100M-Event-Replay"] = 115856553162061,
 }
 

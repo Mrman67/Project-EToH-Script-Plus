@@ -180,11 +180,23 @@ local function towerFolderPresent(name)
     return towersFolder ~= nil and towersFolder:FindFirstChild(name) ~= nil
 end
 
+-- A category maps to one place id or a list of them (some towers exist in several places,
+-- e.g. Pit of Misery in both EToH and The Eternal Abyss). True if we're in one of them.
+local function categoryMatchesPlace(category)
+    local ids = Registry.Categories[category]
+    if type(ids) == "table" then
+        for _, id in ipairs(ids) do
+            if id == currentPlaceId then return true end
+        end
+        return false
+    end
+    return ids == currentPlaceId
+end
+
 for _, tower in ipairs(Registry.Towers or {}) do
     local n = tower.name
-    local placeId = Registry.Categories[tower.category]
     local tpName = getTpFrameName(n)
-    if placeId ~= currentPlaceId and not towerFolderPresent(tpName) then continue end
+    if not categoryMatchesPlace(tower.category) and not towerFolderPresent(tpName) then continue end
     SuggestedTimes[n] = tower.suggestedTime
     TowerConfigs[n] = {
         tpFrame    = function() return workspace.Towers[tpName].Teleporter.Teleporter.TPFRAME end,
@@ -196,8 +208,7 @@ end
 
 for _, tr in ipairs(Registry.TowerRush or {}) do
     local n = tr.name
-    local placeId = Registry.Categories[tr.category]
-    if placeId ~= currentPlaceId and not towerFolderPresent(n) then continue end
+    if not categoryMatchesPlace(tr.category) and not towerFolderPresent(n) then continue end
     SuggestedTimes[n] = tr.suggestedTime
     TowerConfigs[n] = {
         tpFrame = function()
