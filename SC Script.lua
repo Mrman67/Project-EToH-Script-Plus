@@ -1934,20 +1934,24 @@ FlyToggle:AddKeyPicker("FlyKeybind", {
 PlayerBox:AddToggle("InfiniteJump", {
     Text    = "Infinite Jump",
     Default = false,
+    Tooltip = "Each jump press gives one jump, mid-air included -- holding the key won't keep you rising.",
     Callback = function(state)
+        if _G.InfiniteJumpConn then
+            _G.InfiniteJumpConn:Disconnect()
+            _G.InfiniteJumpConn = nil
+        end
         if state then
             local Players = game:GetService("Players")
             local UIS     = game:GetService("UserInputService")
-            _G.InfiniteJumpConn = UIS.JumpRequest:Connect(function()
+            -- InputBegan fires ONCE per key press (unlike JumpRequest, which repeats
+            -- while held), so you get a single jump per press instead of flying upward.
+            _G.InfiniteJumpConn = UIS.InputBegan:Connect(function(input)
+                if UIS:GetFocusedTextBox() then return end
+                if input.KeyCode ~= Enum.KeyCode.Space and input.KeyCode ~= Enum.KeyCode.ButtonA then return end
                 local char = Players.LocalPlayer.Character
                 local hum  = char and char:FindFirstChildOfClass("Humanoid")
                 if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
             end)
-        else
-            if _G.InfiniteJumpConn then
-                _G.InfiniteJumpConn:Disconnect()
-                _G.InfiniteJumpConn = nil
-            end
         end
     end,
 })
