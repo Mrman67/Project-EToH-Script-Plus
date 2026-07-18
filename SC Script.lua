@@ -22,7 +22,10 @@ local repo
 if uiStyle == "Linoria" then
     repo = "https://raw.githubusercontent.com/mstudio45/LinoriaLib/main/"
 else
-    repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
+    -- Pinned to a known-good commit (2026-07-09). Loading from main means any push
+    -- to their repo lands in this script instantly; a 2026-07-11 change to the
+    -- config-load path is the suspect for UI Settings breaking. Bump deliberately.
+    repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/398653c103a0b4a8d2a3b68bcd383af21814a512/"
 end
 local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
 local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
