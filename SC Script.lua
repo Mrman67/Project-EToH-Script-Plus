@@ -2045,6 +2045,27 @@ end
 
 -- Godmode is split into independent methods -- enable any one or several at once.
 
+-- Not every place has ReplicatedStorage.DamageEvent -- The Eternal Abyss doesn't.
+-- A bare WaitForChild there yields FOREVER, and since the godmode toggles are applied
+-- during load, that silently halts the rest of the script: the UI Settings tab gets
+-- created but never filled, and the Theme/Save managers never run. Time out instead.
+local function getDamageEvent()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    return ReplicatedStorage:FindFirstChild("DamageEvent")
+        or ReplicatedStorage:WaitForChild("DamageEvent", 5)
+end
+
+-- Turn the toggle back off and say why, so it can't sit there looking enabled.
+local function godmodeUnavailable(toggleName)
+    Library:Notify({
+        Title       = "Godmode",
+        Description = "No DamageEvent in this place -- that mode isn't available here.",
+        Duration    = 5,
+    })
+    local toggle = Library.Toggles[toggleName]
+    if toggle then toggle:SetValue(false) end
+end
+
 -- Hook: intercept DamageEvent:FireServer through __namecall so damage never reaches
 -- the server. Cleanest, but needs hookmetamethod + getnamecallmethod support.
 local function setGodmodeHook(state)
@@ -2053,7 +2074,8 @@ local function setGodmodeHook(state)
         godmodeOriginal = nil
     end
     if not state then return end
-    local damageEvent = game:GetService("ReplicatedStorage"):WaitForChild("DamageEvent")
+    local damageEvent = getDamageEvent()
+    if not damageEvent then return godmodeUnavailable("GodmodeHook") end
     godmodeOriginal = hookmetamethod(game, "__namecall", function(self, ...)
         if self == damageEvent and getnamecallmethod() == "FireServer" then
             return
@@ -2071,7 +2093,8 @@ local function setGodmodeHeal(state)
     if not state then return end
     local Players    = game:GetService("Players")
     local RunService = game:GetService("RunService")
-    local damageEvent = game:GetService("ReplicatedStorage"):WaitForChild("DamageEvent")
+    local damageEvent = getDamageEvent()
+    if not damageEvent then return godmodeUnavailable("GodmodeHeal") end
     godmodeV2Connection = RunService.Heartbeat:Connect(function()
         local char = Players.LocalPlayer.Character
         if not char then return end
